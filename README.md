@@ -1,22 +1,21 @@
-# Modern.ie
+# modern.IE
 
-The Modern.ie scan analyzes the HTML, CSS, and JavaScript of a site or application to
-determine whether it is using good development practices.
+The modern.IE scan analyzes the HTML, CSS, and JavaScript of a site or application for common coding issues.
 It warns about practices such as incomplete specification of CSS properties, invalid or incorrect
 doctypes, and obsolete versions of popular JavaScript libraries.
 
-It's easiest to use Modern.ie by going to the [Modern.ie site](http://Modern.ie) 
+It's easiest to use modern.IE by going to the [modern.IE site](http://modern.ie) 
 and entering the URL to scan there. To customize the scan, or to use the scan
 to process files behind a firewall, you can clone and build the files from this repo
 and run the scan locally.
 
 ## How it works
 
-The Modern.ie local scan runs on a system behind your firewall; that system must have
+The modern.IE local scan runs on a system behind your firewall; that system must have
 access to the internal web site or application that is to be scanned.
-Once the files have been analyzed, the analysis results are sent back to the Modern.ie
+Once the files have been analyzed, the analysis results are sent back to the modern.IE
 site to generate a complete formatted report that includes advice on remediating any issues.
-The report generation code and formatted pages from the Modern.IE site are not included in this repo.
+The report generation code and formatted pages from the modern.IE site are not included in this repo.
 
 Since the local scan generates JSON output, you can alternatively use it as a standalone scanner
 or incorporate it into a project's build process by processing the JSON with a local script.
