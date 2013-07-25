@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta name="description" content="Flash plugin with nested Objects">
+</head>
+<body>
+    <h1>Flash plugin with nested Objects</h1>
+    <p>Expected result: <b>Passes</b></p>
+    <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+            codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0"
+            width="333" height="333" id="unique_id" align="middle">
+        <param name="movie" value="path/flash_movie.swf" />
+        <param name="quality" value="high">
+        <param name="bgcolor" value="#fff">
+        <!--[if !IE]>-->
+        <object data="path/flash_movie.swf" type="application/x-shockwave-flash"
+                width="333" height="333"  id="unique_id" align="middle">
+            <param name="pluginurl" value="http://www.adobe.com/go/getflashplayer">
+            <param name="quality" value="high">
+            <param name="bgcolor" value="#fff">
+            <!--<![endif]-->
+            <p>Alternate content goes here..</p>
+            <!--[if !IE]>-->
+        </object>
+        <!--<![endif]-->
+    </object>
+</body>
+</html>

@@ -1,0 +1,33 @@
+body {
+    width:800px;
+    font-family:'Segoe UI';
+    font-size: 16px;
+}
+
+#id {
+    float:left;
+    width:300px;
+    height:200px;
+    background-color: #FF0000;
+}
+
+@media only screen and (min-width: 480px) {
+    #id{
+        width: 600px;
+        background-color: #00FF00;
+    }
+}
+
+@media only screen and (min-width: 780px) {
+    #id{
+        width: 650px;
+        background-color: #F0F0F0;
+    }
+}
+
+@media only screen and (max-width: 479px) {
+    #id{
+        width: 200px;
+        background-color: #0000FF;
+    }
+}

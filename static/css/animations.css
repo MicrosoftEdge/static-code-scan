@@ -1,0 +1,8 @@
+div
+{
+    -webkit-animation: myfirst 5s;
+    -moz-animation: myfirst 5s;
+    -o-animation: myfirst 5s;
+    -ms-animation: myfirst 5s;
+    animation: myfirst 5s;
+}

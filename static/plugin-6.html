@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta name="description" content="Flash plugin with nested Objects">
+</head>
+<body>
+    <h1>Flash plugin object and embed</h1>
+    <p>Expected result: <b>Passes</b></p>
+    <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+            codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0"
+            width="333" height="333" id="unique_id" align="middle">
+        <param name="allowScriptAccess" value="sameDomain" />
+        <param name="movie" value="path/flash_movie.swf" />
+        <param name="wmode" value="transparent" />
+        <param name="scale" value="exactfit" />
+        <param name="quality" value="high" />
+        <param name="bgcolor" value="#333" />
+        <param name="menu" value="true" />
+        <embed src="path/flash_movie.swf" name="unique_id" allowScriptAccess="sameDomain"
+               type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer"
+               quality="high" bgcolor="#333" width="333" height="333" align="middle" />
+    </object>
+</body>
+</html>

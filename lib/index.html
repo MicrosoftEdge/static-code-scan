@@ -1,0 +1,182 @@
+<!doctype html>
+<!--
+ * Main HTML file interface for Modern.IE local scans. Prompts the user for a URL
+ * to scan, sends the URL to the local service, and retrieves the JSON results.
+ * The user can then submit the results to the Modern.IE site for a report.
+ *
+ * Copyright (c) Microsoft Corporation; All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the License at
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * THIS CODE IS PROVIDED AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED WARRANTIES OR CONDITIONS
+ * OF TITLE, FITNESS FOR A PARTICULAR PURPOSE, MERCHANTABLITY OR NON-INFRINGEMENT.
+ *
+ * See the Apache Version 2.0 License for specific language governing permissions
+ * and limitations under the License.
+-->
+<html>
+<head>
+	<title>Modern.ie Local Scan</title>
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		body {
+			font-family: Verdana, Arial, sans-serif;
+			color: #114477;
+			padding: 1em;
+			background: rgb(222,239,255); /* Old browsers */
+			background: -webkit-linear-gradient(top, rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%); /* Chrome10+,Safari5.1+ */
+			background: linear-gradient(to bottom, rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%); /* W3C */
+		}
+		p {
+			max-width: 50em;
+			margin: 0.5em 0;
+		}
+		pre {
+			color: #006611;
+			background: rgb(192,239,192); /* Old browsers */
+			background: -webkit-linear-gradient(top, rgba(192,239,192,1) 0%,rgba(171,199,171,1) 100%); /* Chrome10+,Safari5.1+ */
+			background: linear-gradient(to bottom, rgba(192,239,192,1) 0%,rgba(171,199,171,1) 100%); /* W3C */
+		}
+		label {
+			display: block;
+			color: #225599;
+			margin: 0.25em 0;
+		}
+		label span {
+			display: inline-block;
+			width: 7em;
+		}
+		input[type=submit], button {
+			font-size: 125%;
+			color: #dfefff;
+			border: none;
+			padding: 4px 32px;
+			margin-bottom: 1em;
+			background: #225599; /* Old browsers */
+			background: -webkit-linear-gradient(top, #7db9e8 0%,#207cca 24%,#1e5799 100%); /* Chrome10+,Safari5.1+ */
+			background: linear-gradient(to bottom, #7db9e8 0%,#207cca 24%,#1e5799 100%); /* W3C */
+		}
+	</style>
+	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+	<script>
+		$(function () {
+			$("#step2").hide();
+
+			$("#scanform").on("submit", function (event) {
+				var url = $("#url").val(),
+					user = $("#user").val(),
+					password = $("#password").val(),
+					data;
+
+				if ( url.length < 4 ) {
+					alert("Please enter a URL.");
+					return false;
+				}
+				if ( !/^http/i.test(url) ) {
+					url = "http://" + url;
+				}
+
+				if ( user && password ) {
+					data = {
+						url: url,
+						user: user,
+						password: password
+					};
+				} else {
+					data = {
+						url: url
+					};
+				}
+
+				event.preventDefault();
+				$("#step1status").text("Scanning " + url + "...");
+				$.ajax({
+					method: "get",
+					url: "/",
+					data: data,
+					dataType: "text"
+				})
+				.done(function (results) {
+					$("#step1").hide();
+					$("#step1status").text("");
+					$("#step2").show();
+					$("#json").val(results);
+					$("#scanresults").hide().text(results);
+					try {
+						$("#scanresults").text(JSON.stringify(JSON.parse(results), null, "  "));
+					} catch (ex) {
+					}
+				})
+				.fail(function (xhr) {
+					alert("Failed: " + xhr.status + " " + xhr.responseText);
+				});
+			});
+
+			$("#newscan").on("click", function () {
+				$("#step2").hide();
+				$("#step1").show();
+			});
+			$("#viewresults").on("click", function () {
+				$("#scanresults").show();
+				$("#viewresults").hide();
+				return false;
+			});
+		});
+	</script>
+</head>
+<body>
+
+<h1>Modern.ie Local Scan</h1>
+
+<div id="step1">
+	<h2>Scan a page</h2>
+
+	<p>Enter the URL of the page to be scanned. If the page requires authentication for access, enter the username and password; otherwise leave those fields blank. (HTTP Basic and Digest authentication methods are supported.)</p>
+
+	<form id="scanform" action="">
+		<label>
+			<span>URL to scan:</span>
+			<input type="text" name="url" id="url" size="70">
+		</label>
+		<label>
+			<span>Username:</span>
+			<input type="text" name="user" id="user" size="20">
+		<label>
+			<span>Password:</span>
+			<input type="text" name="password" id="password" size="20">
+		</label>
+		<input type="submit" name="scan" id="scan" value="Scan">
+
+		<p id="step1status"></p>
+	</form>
+</div>
+
+<div id="step2">
+	<h2>Generate report</h2>
+
+	<p>
+		The scan is complete and the report is ready to be generated.
+		Press the button below to submit the scan data to the Modern.ie site and create the report.
+	</p>
+
+	<form id="reportform" action="http://www.modern.ie/report/local" method="post">
+		<input type="submit" id="report" value="Create Report">
+		<input type="hidden" name="local_test_results" id="json" value="">
+	</form>
+
+	<p><a href="" id="viewresults">See what will be submitted</a></p>
+	<pre id="scanresults"></pre>
+
+	<div>
+		<button id="newscan">New Scan</button>
+	</div>
+</div>
+
+</body>
+</html>
