@@ -24,9 +24,9 @@ var url = require('url'),
     cheerio = require('cheerio'),
     promises = require('promised-io/promise'),
     Deferred = require('promised-io').Deferred,
-    cssLoader = require('./checks/loadcss.js'),
-    jsLoader = require('./checks/loadjs.js'),
-    tests = require('./checks/loadchecks.js').tests,
+    cssLoader = require('./lib/checks/loadcss.js'),
+    jsLoader = require('./lib/checks/loadjs.js'),
+    tests = require('./lib/checks/loadchecks.js').tests,
     http = require('http'),
     path = require('path'),
     zlib = require('zlib'),
@@ -96,7 +96,7 @@ function remoteErrorResponse(response, statusCode, message) {
 }
 
 function returnMainPage(req, response) {
-    fs.readFile(path.join(__dirname, "index.html"), function (err, data) {
+    fs.readFile(path.join(__dirname,"lib", "index.html"), function (err, data) {
         if (!err) {
             response.writeHeader(200, {"Content-Type": "text/html"});
 

@@ -18,7 +18,7 @@
 
 "use strict";
 
-var service = require('../lib/service.js'),
+var service = require('../service.js'),
     serviceUrl = 'http://localhost:' + service.port + '/?url=%0',
     authString = '&user=%1&password=%2',
     authServer = require('../static/auth-server.js'),
