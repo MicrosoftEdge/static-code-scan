@@ -21,9 +21,12 @@ var url = require('url'),
     fs = require('fs'),
     port = process.env.PORT || 1337,
     request = require('request'),
+    express = require('express'),
+    app = express(),
     cheerio = require('cheerio'),
     promises = require('promised-io/promise'),
     Deferred = require('promised-io').Deferred,
+    promised = require("promised-io/promise"),
     cssLoader = require('./lib/checks/loadcss.js'),
     jsLoader = require('./lib/checks/loadjs.js'),
     tests = require('./lib/checks/loadchecks.js').tests,
@@ -71,7 +74,7 @@ function analyze(data, body, res) {
             }
 
             promises.all(promisesTests).then(function (array) {
-				// Generate final results and send back the response
+                // Generate final results and send back the response
                 for (var i = 0; i < array.length; i++) {
                     results[array[i].testName] = array[i];
                 }
@@ -96,7 +99,7 @@ function remoteErrorResponse(response, statusCode, message) {
 }
 
 function returnMainPage(req, response) {
-    fs.readFile(path.join(__dirname,"lib", "index.html"), function (err, data) {
+    fs.readFile(path.join(__dirname, "lib", "index.html"), function (err, data) {
         if (!err) {
             response.writeHeader(200, {"Content-Type": "text/html"});
 
@@ -129,8 +132,8 @@ function getBody(res, body) {
                 }
             });
         } else {
-			deferred.reject("Unknown content encoding: "+res.headers['content-encoding']);
-		}
+            deferred.reject("Unknown content encoding: " + res.headers['content-encoding']);
+        }
     } else {
         if (body) {
             deferred.resolve(body.toString(charset));
@@ -158,7 +161,7 @@ function processResponse(response, auth) {
 
 function handleRequest(req, response) {
     if (req.url === '/') {
-		// Return the "local scan" page
+        // Return the "local scan" page
         returnMainPage(req, response);
         return;
     }
@@ -170,7 +173,7 @@ function handleRequest(req, response) {
         password = sanitize(decodeURIComponent(parameters.password)).xss(),
         auth;
 
-	// If the request gave a user/pass, send it along. Wait for 401 response before sending passwords.
+    // If the request gave a user/pass, send it along. Wait for 401 response before sending passwords.
     if (user !== "undefined" && password !== "undefined") {
         auth = {
             'user': user,
@@ -185,7 +188,55 @@ function handleRequest(req, response) {
     }
 }
 
-http.createServer(handleRequest).listen(port);
+function handlePackage(req, res) {
+    var cssPromises = [];
+    var remoteCSS = JSON.parse(req.body.css);
+    remoteCSS.forEach(function (parsedCSS) {
+        cssPromises.push(cssLoader.parseCSS(parsedCSS.content, parsedCSS.url));
+    });
+
+    promised.all(cssPromises)
+        .then(function(results){
+            var cssResults = [];
+            results.forEach(function(cssResult){
+                cssResults.push(cssResult[0]);
+            });
+
+            var website = {
+                url: url.parse(req.body.url.replace(/"/g, '')),
+                content: req.body.html,
+                css: cssResults,
+                js: JSON.parse(req.body.js),
+                $: cheerio.load(req.body.html, { lowerCaseTags: true, lowerCaseAttributeNames: true })
+            };
+
+            var promisesTests = [], results = {};
+
+            for (var i = 0; i < tests.length; i++) {
+                // Call each test and save its returned promise
+                promisesTests.push(tests[i].check(website));
+            }
+
+            promises.all(promisesTests).then(function (array) {
+                // Generate final results and send back the response
+                for (var i = 0; i < array.length; i++) {
+                    results[array[i].testName] = array[i];
+                }
+                res.writeHeader(200, {"Content-Type": "application/json",
+                    "X-Content-Type-Options": "nosniff" });
+                res.write(JSON.stringify({url: website.url.href, results: results}));
+                res.end();
+            });
+        });
+}
+
+app.use(express.bodyParser());
+
+app.get('/', handleRequest);
+app.post('/package', handlePackage);
+
+app.listen(port);
+//http.createServer(handleRequest).listen(port);
 
 console.log('Server started on port ' + port);
 console.log('To scan a private url go to http://localhost:' + port + '/ and follow the instructions');
