@@ -22,6 +22,7 @@ var url = require('url'),
     port = process.env.PORT || 1337,
     request = require('request'),
     express = require('express'),
+    cors = require('cors'),
     app = express(),
     cheerio = require('cheerio'),
     promises = require('promised-io/promise'),
@@ -189,6 +190,10 @@ function handleRequest(req, response) {
 }
 
 function handlePackage(req, res) {
+    if(!req.body.js || !req.body.css || !req.body.html || !req.body.url){
+        remoteErrorResponse(res, 400, "Missing information");
+    }
+
     var cssPromises = [];
     var remoteCSS = JSON.parse(req.body.css);
     remoteCSS.forEach(function (parsedCSS) {
@@ -203,7 +208,7 @@ function handlePackage(req, res) {
             });
 
             var website = {
-                url: url.parse(req.body.url.replace(/"/g, '')),
+                url: req.body.url ? url.parse(req.body.url.replace(/"/g, '')) :  "http://privates.ite",
                 content: req.body.html,
                 css: cssResults,
                 js: JSON.parse(req.body.js),
@@ -233,7 +238,7 @@ function handlePackage(req, res) {
 app.use(express.bodyParser());
 
 app.get('/', handleRequest);
-app.post('/package', handlePackage);
+app.post('/package', cors(), handlePackage);
 
 app.listen(port);
 //http.createServer(handleRequest).listen(port);
