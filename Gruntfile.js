@@ -28,6 +28,7 @@
             pluginfree:['test/**/pluginfree*.js'],
             rwd:['test/**/responsive*.js'],
             touch:['test/**/touch*.js'],
+            pagination: ['test/**/pagination*.js'],
             auth:['test/**/auth*.js']
         },
         watch:{
