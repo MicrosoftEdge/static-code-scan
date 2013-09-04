@@ -48,14 +48,15 @@ var url = require('url'),
  * before calling any of the tests. Note that the tests still could
  * retrieve additional content async, since they return a promise.
  */
-function analyze(data, body, res) {
+function analyze(data, content, res) {
     var results = {};
 
     var website = {
         url: url.parse(data.uri),
         auth: data.auth,
-        content: body,
-        $: cheerio.load(body, { lowerCaseTags: true, lowerCaseAttributeNames: true })
+        content: content.body,
+        compression: content.compression,
+        $: cheerio.load(website, { lowerCaseTags: true, lowerCaseAttributeNames: true })
     };
 
     cssLoader.loadCssFiles(website).then(function (css) {
@@ -71,7 +72,7 @@ function analyze(data, body, res) {
             }
 
             promises.all(promisesTests).then(function (array) {
-				// Generate final results and send back the response
+                // Generate final results and send back the response
                 for (var i = 0; i < array.length; i++) {
                     results[array[i].testName] = array[i];
                 }
@@ -96,7 +97,7 @@ function remoteErrorResponse(response, statusCode, message) {
 }
 
 function returnMainPage(req, response) {
-    fs.readFile(path.join(__dirname,"lib", "index.html"), function (err, data) {
+    fs.readFile(path.join(__dirname, "lib", "index.html"), function (err, data) {
         if (!err) {
             response.writeHeader(200, {"Content-Type": "text/html"});
 
@@ -115,7 +116,10 @@ function getBody(res, body) {
         if (res.headers['content-encoding'] === 'gzip') {
             zlib.gunzip(body, function (err, data) {
                 if (!err) {
-                    deferred.resolve(data.toString(charset));
+                    deferred.resolve({
+                        body: data.toString(charset),
+                        compression: 'gzip'
+                    });
                 } else {
                     deferred.reject('Error found: can\'t gunzip content ' + err);
                 }
@@ -123,17 +127,22 @@ function getBody(res, body) {
         } else if (res.headers['content-encoding'] === 'deflate') {
             zlib.inflate(body, function (err, data) {
                 if (!err) {
-                    deferred.resolve(data.toString(charset));
+                    deferred.resolve({
+                            body: data.toString(charset),
+                            compression: 'deflate'}
+                    );
                 } else {
                     deferred.reject('Error found: can\'t deflate content' + err);
                 }
             });
         } else {
-			deferred.reject("Unknown content encoding: "+res.headers['content-encoding']);
-		}
+            deferred.reject("Unknown content encoding: " + res.headers['content-encoding']);
+        }
     } else {
         if (body) {
-            deferred.resolve(body.toString(charset));
+            deferred.resolve({
+                body: body.toString(charset),
+                compression: 'none'});
         } else {
             deferred.reject('Error found: Empty body');
         }
@@ -158,7 +167,7 @@ function processResponse(response, auth) {
 
 function handleRequest(req, response) {
     if (req.url === '/') {
-		// Return the "local scan" page
+        // Return the "local scan" page
         returnMainPage(req, response);
         return;
     }
@@ -170,7 +179,7 @@ function handleRequest(req, response) {
         password = sanitize(decodeURIComponent(parameters.password)).xss(),
         auth;
 
-	// If the request gave a user/pass, send it along. Wait for 401 response before sending passwords.
+    // If the request gave a user/pass, send it along. Wait for 401 response before sending passwords.
     if (user !== "undefined" && password !== "undefined") {
         auth = {
             'user': user,
