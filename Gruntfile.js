@@ -30,6 +30,7 @@ module.exports = function (grunt) {
             touch: ['test/**/touch*.js'],
             pagination: ['test/**/pagination*.js'],
             input: ['test/**/input*.js'],
+            conditional: ['test/**/conditional*.js'],
             auth: ['test/**/auth*.js']
         },
         watch: {

@@ -1,5 +1,5 @@
 /**
- * Description: Test detection of IE10 favicon meta tags.
+ * Description: Tests for conditional comments that target all IE versions
  *
  * Copyright (c) Microsoft Corporation; All rights reserved.
  *
@@ -17,12 +17,12 @@
 
 "use strict";
 
-var pagination = require('../lib/checks/check-pagination.js'),
+var conditional = require('../lib/checks/check-conditionalcomments.js'),
     url = require('url'),
     request = require('request'),
     cheerio = require('cheerio'),
     testServer = require('../static/test-server.js'),
-    testUrl = 'http://localhost:' + testServer.port + '/pagination-';
+    testUrl = 'http://localhost:' + testServer.port + '/conditional-';
 
 
 function checkPage(page, expected) {
@@ -44,7 +44,7 @@ function checkPage(page, expected) {
                 $: cheerio.load(content)
             };
 
-            pagination.check(website).then(function (result) {
+            conditional.check(website).then(function (result) {
                 test.equal(result.passed, expected.passed, uri + " passed: " + result.passed + " !== " + expected.passed);
                 if (expected.data) {
                     for(var key in expected.data){
@@ -57,17 +57,38 @@ function checkPage(page, expected) {
     };
 }
 
-module.exports['Pagination'] = {
-    'No pagination': checkPage('1.html', {
-        passed: false
+module.exports['Conditional Comments'] = {
+    'No conditional comments': checkPage('1.html', {
+        passed: true
+        }),
+    'if IE': checkPage('2.html', {
+        passed: false,
+        data: {
+            lineNumber: 6
+        }
     }),
-    'Pagination - Next': checkPage('2.html', {
+    'if IE 6': checkPage('3.html', {
         passed: true
     }),
-    'Pagination - Prev': checkPage('3.html', {
+    'if IE 7': checkPage('4.html', {
         passed: true
     }),
-    'Pagination - Prev/Next': checkPage('4.html', {
+    'if IE 8': checkPage('5.html', {
         passed: true
+    }),
+    'if IE9': checkPage('6.html', {
+        passed: true
+    }),
+   'if gte IE 8': checkPage('7.html', {
+        passed: false,
+        data: {
+            lineNumber: 6
+        }
+    }),
+    'if gte IE 6': checkPage('8.html', {
+        passed: false,
+        data: {
+            lineNumber: 6
+        }
     })
 };

@@ -17,7 +17,7 @@
 
 "use strict";
 
-var ie10fav = require('../lib/checks/check-inputs.js'),
+var input = require('../lib/checks/check-inputs.js'),
     url = require('url'),
     request = require('request'),
     cheerio = require('cheerio'),
@@ -44,7 +44,7 @@ function checkPage(page, expected) {
                 $: cheerio.load(content)
             };
 
-            ie10fav.check(website).then(function (result) {
+            input.check(website).then(function (result) {
                 test.equal(result.passed, expected.passed, uri + " passed: " + result.passed + " !== " + expected.passed);
                 if (expected.data) {
                     for(var key in expected.data){
