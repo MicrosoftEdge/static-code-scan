@@ -31,6 +31,7 @@ module.exports = function (grunt) {
             pagination: ['test/**/pagination*.js'],
             input: ['test/**/input*.js'],
             conditional: ['test/**/conditional*.js'],
+            preload: ['test/**/pre*.js'],
             auth: ['test/**/auth*.js']
         },
         watch: {
