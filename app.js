@@ -56,7 +56,7 @@ function analyze(data, content, res) {
         auth: data.auth,
         content: content.body,
         compression: content.compression,
-        $: cheerio.load(website, { lowerCaseTags: true, lowerCaseAttributeNames: true })
+        $: cheerio.load(content.body, { lowerCaseTags: true, lowerCaseAttributeNames: true })
     };
 
     cssLoader.loadCssFiles(website).then(function (css) {
