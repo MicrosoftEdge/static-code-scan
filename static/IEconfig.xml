@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+    <msapplication>
+        <tile>
+            <square70x70logo src="images/smalltile.png"/>
+            <square150x150logo src="images/mediumtile.png"/>
+            <wide310x150logo src="images/widetile.png"/>
+            <square310x310logo src="images/largetile.png"/>
+            <TileColor>#009900</TileColor>
+        </tile>
+        <notification>
+            <polling-uri  src="notifications/contoso1.xml"/>
+            <polling-uri2 src="notifications/contoso2.xml"/>
+            <polling-uri3 src="notifications/contoso3.xml"/>
+            <frequency>30</frequency>
+            <cycle>1</cycle>
+        </notification>
+    </msapplication>
+</browserconfig>

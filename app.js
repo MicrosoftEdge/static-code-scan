@@ -52,14 +52,15 @@ var url = require('url'),
  * before calling any of the tests. Note that the tests still could
  * retrieve additional content async, since they return a promise.
  */
-function analyze(data, body, res) {
+function analyze(data, content, res) {
     var results = {};
 
     var website = {
         url: url.parse(data.uri),
         auth: data.auth,
-        content: body,
-        $: cheerio.load(body, { lowerCaseTags: true, lowerCaseAttributeNames: true })
+        content: content.body,
+        compression: content.compression,
+        $: cheerio.load(content.body, { lowerCaseTags: true, lowerCaseAttributeNames: true })
     };
 
     cssLoader.loadCssFiles(website).then(function (css) {
@@ -119,7 +120,10 @@ function getBody(res, body) {
         if (res.headers['content-encoding'] === 'gzip') {
             zlib.gunzip(body, function (err, data) {
                 if (!err) {
-                    deferred.resolve(data.toString(charset));
+                    deferred.resolve({
+                        body: data.toString(charset),
+                        compression: 'gzip'
+                    });
                 } else {
                     deferred.reject('Error found: can\'t gunzip content ' + err);
                 }
@@ -127,7 +131,10 @@ function getBody(res, body) {
         } else if (res.headers['content-encoding'] === 'deflate') {
             zlib.inflate(body, function (err, data) {
                 if (!err) {
-                    deferred.resolve(data.toString(charset));
+                    deferred.resolve({
+                            body: data.toString(charset),
+                            compression: 'deflate'}
+                    );
                 } else {
                     deferred.reject('Error found: can\'t deflate content' + err);
                 }
@@ -137,7 +144,9 @@ function getBody(res, body) {
         }
     } else {
         if (body) {
-            deferred.resolve(body.toString(charset));
+            deferred.resolve({
+                body: body.toString(charset),
+                compression: 'none'});
         } else {
             deferred.reject('Error found: Empty body');
         }
