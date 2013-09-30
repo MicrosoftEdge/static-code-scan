@@ -52,9 +52,9 @@ function checkPage(page, expected, auth) {
         var uri = page.indexOf('http') === 0 ? page : serviceUrl.replace('%0', serverUrl + page),
             tests = deepCount(expected);
 
-        if (auth) {
-            uri += authString.replace('%1', auth.user).replace('%2', auth.password);
-        }
+//       if (auth) {
+//           uri += authString.replace('%1', auth.user).replace('%2', auth.password);
+//       }
 
         test.expect(tests);
 
