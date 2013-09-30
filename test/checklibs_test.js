@@ -141,5 +141,17 @@ module.exports['JS Libraries'] = {
                 }
             ]
         });
+    },
+    'jQuery up to date 1.7': function (test) {
+        checkPage('11.html', test, {
+            passed: false,
+            data: [
+                {
+                    lineNumber: 7,
+					version: "1.7",
+                    minVersion: "1.7.2"
+                }
+            ]
+        });
     }
 };
