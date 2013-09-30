@@ -46,7 +46,8 @@ module.exports = function (grunt) {
                 'test/**/*.js'
             ],
             options: {
-                strict: false,
+                es5: true,
+				strict: false,
                 curly: true,
                 eqeqeq: true,
                 immed: true,
