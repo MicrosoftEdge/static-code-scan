@@ -12,57 +12,62 @@
  * See the Apache Version 2.0 License for specific language governing permissions
  * and limitations under the License.
  */
- module.exports = function (grunt) {
-	"use strict";
+module.exports = function (grunt) {
+    "use strict";
 
     // Project configuration.
     grunt.initConfig({
-        pkg:grunt.file.readJSON('package.json'),
-        nodeunit:{
-            all:['test/**/*.js'],
-            libs:['test/**/checklibs*.js'],
-            compat:['test/**/compatlist*.js'],
-            cssprefixes:['test/**/cssprefixes*.js'],
-            doctype:['test/**/doctype*.js'],
-            favicon:['test/**/ie10favicon*.js'],
-            pluginfree:['test/**/pluginfree*.js'],
-            rwd:['test/**/responsive*.js'],
-            touch:['test/**/touch*.js'],
-            auth:['test/**/auth*.js']
+        pkg: grunt.file.readJSON('package.json'),
+        nodeunit: {
+            all: ['test/**/*.js'],
+            libs: ['test/**/checklibs*.js'],
+            compat: ['test/**/compatlist*.js'],
+            cssprefixes: ['test/**/cssprefixes*.js'],
+            doctype: ['test/**/doctype*.js'],
+            ie11tiles: ['test/**/ie11*.js'],
+            pluginfree: ['test/**/pluginfree*.js'],
+            rwd: ['test/**/responsive*.js'],
+            touch: ['test/**/touch*.js'],
+            pagination: ['test/**/pagination*.js'],
+            input: ['test/**/input*.js'],
+            browserdetection: ['test/**/browserdetection*.js'],
+            preload: ['test/**/pre*.js'],
+            auth: ['test/**/auth*.js']
         },
-        watch:{
-            files:'<%= lint.files %>',
-            tasks:'jshint'
+        watch: {
+            files: '<%= lint.files %>',
+            tasks: 'jshint'
         },
-        jshint:{
+        jshint: {
             files: [
-				'grunt.js',
-				'lib/**/*.js',
-				'test/**/*.js'
-			],
-            options:{
+                'grunt.js',
+                'lib/**/*.js',
+                'test/**/*.js'
+            ],
+            options: {
+                es5: true,
 				strict: false,
-                curly:true,
-                eqeqeq:true,
-                immed:true,
-                latedef:true,
-                newcap:true,
-                noarg:true,
-                sub:true,
-                undef:true,
-                boss:true,
-                eqnull:true,
+                curly: true,
+                eqeqeq: true,
+                immed: true,
+                latedef: true,
+                newcap: true,
+                noarg: true,
+                sub: true,
+                undef: true,
+                boss: true,
+                eqnull: true,
                 node: true,
                 globals: {
-				   setImmediate: true,
-                   exports:true
+                    setImmediate: true,
+                    exports: true
                 }
-           },
+            },
         }
     });
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
-	grunt.loadNpmTasks("grunt-contrib-watch");
-	grunt.loadNpmTasks("grunt-contrib-jshint");
+    grunt.loadNpmTasks("grunt-contrib-watch");
+    grunt.loadNpmTasks("grunt-contrib-jshint");
     // Default task.
     grunt.registerTask('default', ['jshint', 'nodeunit']);
 };

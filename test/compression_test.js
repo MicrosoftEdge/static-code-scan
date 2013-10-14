@@ -20,9 +20,8 @@
 
 var service = require('../app.js'),
     serviceUrl = 'http://localhost:' + service.port + '/?url=%0',
-    authString = '&user=%1&password=%2',
-    authServer = require('../static/auth-server.js'),
-    serverUrl = 'http%3A%2F%2Flocalhost%3A' + authServer.port + '%2Fauth-',
+    authServer = require('../static/compress-server.js'),
+    serverUrl = 'http%3A%2F%2Flocalhost%3A' + authServer.port + '%2Fcompress-',
     request = require('request');
 
 
@@ -53,24 +52,20 @@ function checkPage(page, expected, auth) {
         var uri = page.indexOf('http') === 0 ? page : serviceUrl.replace('%0', serverUrl + page),
             tests = deepCount(expected);
 
-        if (auth) {
-            uri += authString.replace('%1', auth.user).replace('%2', auth.password);
-        }
+//       if (auth) {
+//           uri += authString.replace('%1', auth.user).replace('%2', auth.password);
+//       }
 
         test.expect(tests);
 
-        request(uri, function (error, response, content) {            
-			var result = JSON.parse(content);
+        request(uri, function (error, response, content) {
+            var result = JSON.parse(content);
             checkObject(result, expected, test);
             test.done();
         });
     };
 }
 
-module.exports['Auth Tests'] = {
-    'No auth': checkPage('1.html', {statusCode: 401}),
-    'Basic auth': checkPage('1.html', {results: {cvlist: {passed: true}}}, {user: 'user', password: 'password'}),
-    'Basic auth - failing JS': checkPage('2.html', {results: {jslibs: {passed: false}}}, {user: 'user', password: 'password'}),
-    'Basic auth - touch': checkPage('3.html', {results: {touch: {passed: true}}}, {user: 'user', password: 'password'}),
-    'Basic auth - failing JS, touch': checkPage('4.html', {results: {jslibs: {passed: false}, touch: {passed: true}}}, {user: 'user', password: 'password'})
+module.exports['Compression Tests'] = {
+    'Compress': checkPage('1.html', {results: {compression: {passed: true}}})
 };

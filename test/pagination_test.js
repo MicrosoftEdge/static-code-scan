@@ -17,12 +17,12 @@
 
 "use strict";
 
-var ie10fav = require('../lib/checks/check-ie10favicon.js'),
+var pagination = require('../lib/checks/check-pagination.js'),
     url = require('url'),
     request = require('request'),
     cheerio = require('cheerio'),
     testServer = require('../static/test-server.js'),
-    testUrl = 'http://localhost:' + testServer.port + '/favicon-';
+    testUrl = 'http://localhost:' + testServer.port + '/pagination-';
 
 
 function checkPage(page, expected) {
@@ -44,7 +44,7 @@ function checkPage(page, expected) {
                 $: cheerio.load(content)
             };
 
-            ie10fav.check(website).then(function (result) {
+            pagination.check(website).then(function (result) {
                 test.equal(result.passed, expected.passed, uri + " passed: " + result.passed + " !== " + expected.passed);
                 if (expected.data) {
                     for(var key in expected.data){
@@ -57,40 +57,17 @@ function checkPage(page, expected) {
     };
 }
 
-module.exports['IE10 Favicon'] = {
-    'No favicon - No Apple Icon': checkPage('1.html', {
-        passed: false,
-        data: {
-            iOS: false
-        }}),
-    'Favicon ': checkPage('2.html', {
-        passed: true,
-        data: {
-            iOS: false
-        }
+module.exports['Pagination'] = {
+    'No pagination': checkPage('1.html', {
+        passed: false
     }),
-    'No Favicon - Apple Icon Precomposed ': checkPage('3.html', {
-        passed: false,
-        data: {
-            iOS: true
-        }
+    'Pagination - Next': checkPage('2.html', {
+        passed: true
     }),
-    'Favicon - Apple Icon Precomposed': checkPage('4.html', {
-        passed: true,
-        data: {
-            iOS: true
-        }
+    'Pagination - Prev': checkPage('3.html', {
+        passed: true
     }),
-    'No Favicon - Apple Icon': checkPage('5.html', {
-        passed: false,
-        data: {
-            iOS: true
-        }
-    }),
-    'Favicon - Apple Icon': checkPage('6.html', {
-        passed: true,
-        data: {
-            iOS: true
-        }
+    'Pagination - Prev/Next': checkPage('4.html', {
+        passed: true
     })
 };

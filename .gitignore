@@ -1,3 +1,5 @@
 /node_modules/
 /.idea/
 /lib/cvlists.json
+/lib/checks/config.js
+cvlists.json

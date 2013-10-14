@@ -20,7 +20,7 @@ The report generation code and formatted pages from the modern.IE site are not i
 Since the local scan generates JSON output, you can alternatively use it as a standalone scanner
 or incorporate it into a project's build process by processing the JSON with a local script.
 
-The main service for the scan is in the `lib/service.js` file; it acts as an HTTP server.
+The main service for the scan is in the `app.js` file; it acts as an HTTP server.
 It loads the contents of the web page and calls the individual tests, located in `/lib/checks/`.
 Once all the checks have completed, it responds with a JSON object representing the results.
 
@@ -31,7 +31,7 @@ Once all the checks have completed, it responds with a JSON object representing 
 * Clone this repository.
 * Install dependencies. From the Modern.ie subdirectory, type: `npm install`
 * If desired, set an environment variable `PORT` to define the port the service will listen on. By default the port number is 1337. The Windows command to set the port to 8181 would be: `set PORT=8181`
-* Start the scan service: From the Modern.ie subdirectory, type: `node lib/service.js` and the service should respond with a status message containing the port number it is using.
+* Start the scan service: From the Modern.ie subdirectory, type: `node app.js` and the service should respond with a status message containing the port number it is using.
 * Run a browser and go to the service's URL; assuming you are using the default port and are on the same computer, the URL would be: `http://localhost:1337/`
 * Follow the instructions on the page.
 
