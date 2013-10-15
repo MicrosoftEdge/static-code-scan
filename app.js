@@ -53,7 +53,8 @@ var url = require('url'),
  * retrieve additional content async, since they return a promise.
  */
 function analyze(data, content, res) {
-    var results = {};
+    var results = {},
+        start = Date.now();
 
     var website = {
         url: url.parse(data.uri),
@@ -63,17 +64,26 @@ function analyze(data, content, res) {
         $: cheerio.load(content.body, { lowerCaseTags: true, lowerCaseAttributeNames: true })
     };
 
+    var promisesTests = [];
+
+    tests.forEach(function(test){
+        if(test.parallel){
+            promisesTests.push(test.check(website));
+        }
+    });
+
     cssLoader.loadCssFiles(website).then(function (css) {
         website.css = css;
 
         jsLoader.loadjsFiles(website).then(function (js) {
-            var promisesTests = [];
+
             website.js = js;
 
-            for (var i = 0; i < tests.length; i++) {
-                // Call each test and save its returned promise
-                promisesTests.push(tests[i].check(website));
-            }
+            tests.forEach(function(test){
+                if(!test.parallel){
+                    promisesTests.push(test.check(website));
+                }
+            });
 
             promises.all(promisesTests).then(function (array) {
                 // Generate final results and send back the response
@@ -82,7 +92,7 @@ function analyze(data, content, res) {
                 }
                 res.writeHeader(200, {"Content-Type": "application/json",
                     "X-Content-Type-Options": "nosniff" });
-                res.write(JSON.stringify({url: data, results: results}));
+                res.write(JSON.stringify({url: data, processTime: (Date.now() - start)/1000, results: results}));
                 res.end();
             });
         });
