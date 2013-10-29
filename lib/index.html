@@ -107,6 +107,7 @@
 					try {
 						resobj = JSON.parse(results);
 						delete resobj.url.auth;
+						results = JSON.stringify(resobj);
 					} catch (ex) {
 					}
 					$("#step1").hide();
