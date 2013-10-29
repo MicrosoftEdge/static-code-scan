@@ -103,13 +103,19 @@
 					dataType: "text"
 				})
 				.done(function (results) {
+					var resobj;
+					try {
+						resobj = JSON.parse(results);
+						delete resobj.url.auth;
+					} catch (ex) {
+					}
 					$("#step1").hide();
 					$("#step1status").text("");
 					$("#step2").show();
 					$("#json").val(results);
 					$("#scanresults").hide().text(results);
 					try {
-						$("#scanresults").text(JSON.stringify(JSON.parse(results), null, "  "));
+						$("#scanresults").text(JSON.stringify(resobj, null, "  "));
 					} catch (ex) {
 					}
 				})
