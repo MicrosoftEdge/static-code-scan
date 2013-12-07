@@ -39,7 +39,7 @@
     "validator": "~0.4.22",
     "http-agent": ">=0.1.2",
     "hyperquest": "~0.1.4",
-    "csslint": "~0.9.10"
+    "parserlib": "~0.2.3"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
