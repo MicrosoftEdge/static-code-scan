@@ -2,20 +2,17 @@ div {
     -webkit-transition: all 1s ease-in-out;
     -moz-transition: all 1s ease-in-out;
     -o-transition: all 1s ease-in-out;
-    -ms-transition: all 1s ease-in-out;
 }
 
 .property {
     -webkit-transition-property: top, left;
     -o-transition-property: top, left;
-    -ms-transition-property: top, left;
     transition-property: top, left;
 }
 
 .duration {
     -moz-transition-duration: 1s, 1s;
     -o-transition-duration: 1s, 1s;
-    -ms-transition-duration: 1s, 1s;
     transition-duration: 1s, 1s;
 }
 
@@ -29,6 +26,5 @@ div {
 .timing {
     -webkit-timing-function: linear;
     -moz-timing-function: linear;
-    -ms-timing-function: linear;
     timing-function: linear;
 }

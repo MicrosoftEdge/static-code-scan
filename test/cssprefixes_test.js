@@ -82,5 +82,6 @@ module.exports['CSS Prefixes'] = {
     'Embed Missing Transform': checkPage("16.html", {passed: false}),
 	'Imports using url(), inline': checkPage("17.html", {passed: false}),
 	'Imports using single, included': checkPage("18.html", {passed: false}),
-	'Imports using quoted url(), included': checkPage("19.html", {passed: false})
+	'Imports using quoted url(), included': checkPage("19.html", {passed: false}),
+    'Cycle import': checkPage("20.html", {passed: false})
 };
