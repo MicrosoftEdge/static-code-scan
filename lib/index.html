@@ -78,7 +78,10 @@
 					alert("Please enter a URL.");
 					return false;
 				}
-				if ( !/^http/i.test(url) ) {
+
+                if(/^\/\//i.test(url)){
+                    url = "http:" + url;
+                }else if ( !/^http/i.test(url)  ) {
 					url = "http://" + url;
 				}
 
