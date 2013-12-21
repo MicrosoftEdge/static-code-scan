@@ -135,7 +135,7 @@ function getBody(res, body) {
                 }
             });
         } else if (res.headers['content-encoding'] === 'deflate') {
-            zlib.inflate(body, function (err, data) {
+            zlib.inflateRaw(body, function (err, data) {
                 if (!err) {
                     deferred.resolve({
                             body: data.toString(charset),
