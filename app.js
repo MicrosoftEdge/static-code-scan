@@ -213,10 +213,18 @@ function handlePackage(req, res) {
         remoteErrorResponse(res, 400, "Missing information");
     }
 
+    var website = {
+        url: req.body.url ? url.parse(req.body.url.replace(/"/g, '')) :  "http://privates.ite",
+        content: req.body.html,
+        css: null,
+        js: JSON.parse(req.body.js),
+        $: cheerio.load(req.body.html, { lowerCaseTags: true, lowerCaseAttributeNames: true })
+    };
+
     var cssPromises = [];
     var remoteCSS = JSON.parse(req.body.css);
     remoteCSS.forEach(function (parsedCSS) {
-        cssPromises.push(cssLoader.parseCSS(parsedCSS.content, parsedCSS.url));
+        cssPromises.push(cssLoader.parseCSS(parsedCSS.content, parsedCSS.url, null, null, website));
     });
 
     promised.all(cssPromises)
@@ -226,13 +234,8 @@ function handlePackage(req, res) {
                 cssResults.push(cssResult[0]);
             });
 
-            var website = {
-                url: req.body.url ? url.parse(req.body.url.replace(/"/g, '')) :  "http://privates.ite",
-                content: req.body.html,
-                css: cssResults,
-                js: JSON.parse(req.body.js),
-                $: cheerio.load(req.body.html, { lowerCaseTags: true, lowerCaseAttributeNames: true })
-            };
+            website.css = cssResults;
+
 
             var promisesTests = [], results = {};
 
