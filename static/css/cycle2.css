@@ -1,0 +1,7 @@
+@import 'cycle1.css'; /* relative to this file */
+
+div{
+    transform: matrix3d(0.359127, -0.469472, 0.806613, 0, 0.190951, 0.882948, 0.428884, 0, -0.913545, 0, 0.406737, 0, 0, 0, 0, 1);
+    animation: myAnimation 3s ease-out -1s 2 normal;
+    transition: opacity 5s linear 1s, background-color 2s ease;
+}
