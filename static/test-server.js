@@ -21,7 +21,7 @@ http.createServer(function(req, res) {
     fs.exists(filename, function(exists) {
         if(!exists) {
             console.log("not exists: " + filename);
-            res.writeHead(200, {'Content-Type': 'text/plain'});
+            res.writeHead(404, {'Content-Type': 'text/plain'});
             res.write('404 Not Found\n');
             res.end();
             return;

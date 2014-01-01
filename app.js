@@ -66,8 +66,8 @@ function analyze(data, content, res) {
 
     var promisesTests = [];
 
-    tests.forEach(function(test){
-        if(test.parallel){
+    tests.forEach(function (test) {
+        if (test.parallel) {
             promisesTests.push(test.check(website));
         }
     });
@@ -79,8 +79,8 @@ function analyze(data, content, res) {
 
             website.js = js;
 
-            tests.forEach(function(test){
-                if(!test.parallel){
+            tests.forEach(function (test) {
+                if (!test.parallel) {
                     promisesTests.push(test.check(website));
                 }
             });
@@ -92,7 +92,7 @@ function analyze(data, content, res) {
                 }
                 res.writeHeader(200, {"Content-Type": "application/json",
                     "X-Content-Type-Options": "nosniff" });
-                res.write(JSON.stringify({url: data, processTime: (Date.now() - start)/1000, results: results}));
+                res.write(JSON.stringify({url: data, processTime: (Date.now() - start) / 1000, results: results}));
                 res.end();
             });
         });
@@ -209,12 +209,12 @@ function handleRequest(req, response) {
 }
 
 function handlePackage(req, res) {
-    if(!req.body.js || !req.body.css || !req.body.html || !req.body.url){
+    if (!req.body.js || !req.body.css || !req.body.html || !req.body.url) {
         remoteErrorResponse(res, 400, "Missing information");
     }
 
     var website = {
-        url: req.body.url ? url.parse(req.body.url.replace(/"/g, '')) :  "http://privates.ite",
+        url: req.body.url ? url.parse(req.body.url.replace(/"/g, '')) : "http://privates.ite",
         content: req.body.html,
         css: null,
         js: JSON.parse(req.body.js),
@@ -224,13 +224,15 @@ function handlePackage(req, res) {
     var cssPromises = [];
     var remoteCSS = JSON.parse(req.body.css);
     remoteCSS.forEach(function (parsedCSS) {
-        cssPromises.push(cssLoader.parseCSS(parsedCSS.content, parsedCSS.url, null, null, website));
+        if (parsedCSS.content !== '') {
+            cssPromises.push(cssLoader.parseCSS(parsedCSS.content, parsedCSS.url, null, null, website));
+        }
     });
 
     promised.all(cssPromises)
-        .then(function(results){
+        .then(function (results) {
             var cssResults = [];
-            results.forEach(function(cssResult){
+            results.forEach(function (cssResult) {
                 cssResults.push(cssResult[0]);
             });
 
