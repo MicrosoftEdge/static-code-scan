@@ -48,7 +48,7 @@ var url = require('url'),
             'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)'}});
 
 
-function launchParallelTests(promisesArray, website) {
+function launchNonParallelTests(promisesArray, website) {
     var deferred = new Deferred();
 
     process.nextTick(function () {
@@ -65,14 +65,37 @@ function launchParallelTests(promisesArray, website) {
     return deferred.promise;
 }
 
+function sendResults(res, start, resultsArray) {
+    var results = {};
+
+    for (var i = 0; i < resultsArray.length; i++) {
+        results[resultsArray[i].testName] = resultsArray[i];
+    }
+    res.writeHeader(200, {"Content-Type": "application/json",
+        "X-Content-Type-Options": "nosniff" });
+    res.write(JSON.stringify({processTime: (Date.now() - start) / 1000, results: results}));
+    res.end();
+}
+
+function sendInternalServerError(error, res) {
+    res.writeHeader(500, {"Content-Type": "text/plain"});
+    res.write(JSON.stringify(error) + '\n');
+    res.end();
+}
+
+function remoteErrorResponse(response, statusCode, message) {
+    response.writeHead(200, {"Content-Type": "application/json"});
+    response.write(JSON.stringify({statusCode: statusCode, message: message}));
+    response.end();
+}
+
 /*
  * Since several tests need HTML/JS/CSS content, fetch it all at once
  * before calling any of the tests. Note that the tests still could
  * retrieve additional content async, since they return a promise.
  */
 function analyze(data, content, res) {
-    var results = {},
-        start = Date.now(),
+    var start = Date.now(),
         promisesTests = [];
 
     var website = {
@@ -91,28 +114,9 @@ function analyze(data, content, res) {
 
     cssLoader.loadCssFiles(website)
         .then(jsLoader.loadjsFiles)
-        .then(launchParallelTests.bind(null, promisesTests))
+        .then(launchNonParallelTests.bind(null, promisesTests))
         .then(promises.all)
-        .then(function (array) {
-            // Generate final results and send back the response
-            for (var i = 0; i < array.length; i++) {
-                results[array[i].testName] = array[i];
-            }
-            res.writeHeader(200, {"Content-Type": "application/json",
-                "X-Content-Type-Options": "nosniff" });
-            res.write(JSON.stringify({url: data, processTime: (Date.now() - start) / 1000, results: results}));
-            res.end();
-        }, function (error) {
-            res.writeHeader(500, {"Content-Type": "text/plain"});
-            res.write(JSON.stringify(error) + '\n');
-            res.end();
-        });
-}
-
-function remoteErrorResponse(response, statusCode, message) {
-    response.writeHead(200, {"Content-Type": "application/json"});
-    response.write(JSON.stringify({statusCode: statusCode, message: message}));
-    response.end();
+        .then(sendResults.bind(null, res, start), sendInternalServerError.bind(null, res));
 }
 
 function returnMainPage(req, response) {
@@ -129,42 +133,57 @@ function returnMainPage(req, response) {
     });
 }
 
+
+
+function decompress(body, type) {
+    var deferred = new Deferred();
+
+    if (type === 'gzip') {
+        zlib.gunzip(body, function (err, data) {
+            if (!err) {
+                deferred.resolve({
+                    body: data.toString(charset),
+                    compression: 'gzip'
+                });
+            } else {
+                deferred.reject('Error found: can\'t gunzip content ' + err);
+            }
+        });
+    }else if(type === 'deflate'){
+        zlib.inflateRaw(body, function (err, data) {
+            if (!err) {
+                deferred.resolve({
+                        body: data.toString(charset),
+                        compression: 'deflate'}
+                );
+            } else {
+                deferred.reject('Error found: can\'t deflate content' + err);
+            }
+        });
+    }else{
+        process.nextTick(function(){
+            deferred.reject("Unknown content encoding: " + type);
+        });
+    }
+
+    return deferred.promise;
+}
+
+
 function getBody(res, body) {
     var deferred = new Deferred();
     if (res.headers['content-encoding']) {
-        if (res.headers['content-encoding'] === 'gzip') {
-            zlib.gunzip(body, function (err, data) {
-                if (!err) {
-                    deferred.resolve({
-                        body: data.toString(charset),
-                        compression: 'gzip'
-                    });
-                } else {
-                    deferred.reject('Error found: can\'t gunzip content ' + err);
-                }
-            });
-        } else if (res.headers['content-encoding'] === 'deflate') {
-            zlib.inflateRaw(body, function (err, data) {
-                if (!err) {
-                    deferred.resolve({
-                            body: data.toString(charset),
-                            compression: 'deflate'}
-                    );
-                } else {
-                    deferred.reject('Error found: can\'t deflate content' + err);
-                }
-            });
-        } else {
-            deferred.reject("Unknown content encoding: " + res.headers['content-encoding']);
-        }
+        return decompress(body, res.headers['content-encoding']);
     } else {
-        if (body) {
-            deferred.resolve({
-                body: body.toString(charset),
-                compression: 'none'});
-        } else {
-            deferred.reject('Error found: Empty body');
-        }
+        process.nextTick(function () {
+            if (body) {
+                deferred.resolve({
+                    body: body.toString(charset),
+                    compression: 'none'});
+            } else {
+                deferred.reject('Error found: Empty body');
+            }
+        });
     }
     return deferred.promise;
 }
@@ -172,12 +191,10 @@ function getBody(res, body) {
 function processResponse(response, auth) {
     return function (err, res, body) {
         if (!err && res.statusCode === 200) {
-            getBody(res, body).then(function (result) {
+            getBody(res, body)
+                .then(function (result) {
                     analyze({uri: res.request.href, auth: auth}, result, response);
-                },
-                function (error) {
-                    remoteErrorResponse(response, res.statusCode, error);
-                });
+                }, remoteErrorResponse.bind(null, response, res.statusCode));
         } else {
             remoteErrorResponse(response, res ? res.statusCode : 'No response', 'Error found: ' + err);
         }
@@ -217,6 +234,8 @@ function handlePackage(req, res) {
     if (!req.body.js || !req.body.css || !req.body.html || !req.body.url) {
         remoteErrorResponse(res, 400, "Missing information");
     }
+    var start = Date.now(),
+        cssPromises = [];
 
     var website = {
         url: req.body.url ? url.parse(req.body.url.replace(/"/g, '')) : "http://privates.ite",
@@ -226,7 +245,6 @@ function handlePackage(req, res) {
         $: cheerio.load(req.body.html, { lowerCaseTags: true, lowerCaseAttributeNames: true })
     };
 
-    var cssPromises = [];
     var remoteCSS = JSON.parse(req.body.css);
     remoteCSS.forEach(function (parsedCSS) {
         if (parsedCSS.content !== '') {
@@ -236,31 +254,19 @@ function handlePackage(req, res) {
 
     promised.all(cssPromises)
         .then(function (results) {
-            var cssResults = [];
-            results.forEach(function (cssResult) {
-                cssResults.push(cssResult[0]);
-            });
+            var cssResults = [],
+                promisesTests = [];
 
+            cssResults.concat.apply(cssResults, results);
             website.css = cssResults;
-
-
-            var promisesTests = [], results = {};
 
             for (var i = 0; i < tests.length; i++) {
                 // Call each test and save its returned promise
                 promisesTests.push(tests[i].check(website));
             }
 
-            promises.all(promisesTests).then(function (array) {
-                // Generate final results and send back the response
-                for (var i = 0; i < array.length; i++) {
-                    results[array[i].testName] = array[i];
-                }
-                res.writeHeader(200, {"Content-Type": "application/json",
-                    "X-Content-Type-Options": "nosniff" });
-                res.write(JSON.stringify({url: website.url.href, results: results}));
-                res.end();
-            });
+            promises.all(promisesTests)
+                .then(sendResults.bind(null, res, start));
         });
 }
 
