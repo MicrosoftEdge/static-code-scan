@@ -14,7 +14,7 @@
  * See the Apache Version 2.0 License for specific language governing permissions
  * and limitations under the License.
  */
- 
+
 "use strict";
 
 var responsive = require('../lib/checks/check-responsive.js'),
@@ -46,18 +46,19 @@ function checkPage(page, expected) {
                     $: cheerio.load(content)
                 };
 
-                cssloader.loadCssFiles(website).then(function (css) {
-                    website.css = css;
-                    responsive.check(website).then(function (result) {
+                cssloader.loadCssFiles(website)
+                    .then(responsive.check)
+                    .then(function (result) {
                         test.equal(result.passed, expected.passed, uri + " passed: " + result.passed + " !== " + expected.passed);
+
                         if (expected.data) {
                             for (var key in expected.data) {
                                 test.deepEqual(result.data[key], expected.data[key], uri + " " + key + " " + result.data[key] + " !== " + expected.data[key]);
                             }
                         }
+                        
                         test.done();
                     });
-                });
             });
     };
 }
@@ -107,7 +108,7 @@ module.exports['Responsive'] = {
     }}),
     'RWD - max BreakPoints Spectrum': checkPage("12.html", {passed: true, data: {
         minBreakPoints: [],
-        maxBreakPoints: [360,440,720],
+        maxBreakPoints: [360, 440, 720],
         spectrum: [
             {start: 270, end: 440},
             {start: 540, end: 720}
@@ -115,14 +116,14 @@ module.exports['Responsive'] = {
     }}),
     'RWD - min and max BreakPoints Spectrum': checkPage("13.html", {passed: true, data: {
         minBreakPoints: [360, 440, 720],
-        maxBreakPoints: [360,440,720],
+        maxBreakPoints: [360, 440, 720],
         spectrum: [
             {start: 270, end: 900}
         ]
     }}),
     'RWD - min and max BreakPoints Spectrum 2': checkPage("14.html", {passed: true, data: {
         minBreakPoints: [100, 550, 1120],
-        maxBreakPoints: [360,440,720],
+        maxBreakPoints: [360, 440, 720],
         spectrum: [
             {start: 100, end: 125},
             {start: 270, end: 440},

@@ -14,7 +14,7 @@
  * See the Apache Version 2.0 License for specific language governing permissions
  * and limitations under the License.
  */
- 
+
 "use strict";
 
 var touchChecker = require('../lib/checks/check-touch.js'),
@@ -47,22 +47,19 @@ function checkPage(page, expected) {
                     $: cheerio.load(content)
                 };
 
-                cssloader.loadCssFiles(website).then(function (css) {
-                    website.css = css;
-                    jsLoader.loadjsFiles(website).then(function (js) {
-                        website.js = js;
-                        touchChecker.check(website).then(function (result) {
-                            test.equal(result.passed, expected.passed, uri + " passed: " + result.passed + " !== " + expected.passed);
+                cssloader.loadCssFiles(website)
+                    .then(jsLoader.loadjsFiles)
+                    .then(touchChecker.check)
+                    .then(function (result) {
+                        test.equal(result.passed, expected.passed, uri + " passed: " + result.passed + " !== " + expected.passed);
 
-                            if (expected.data) {
-                                for (var key in expected.data) {
-                                    test.strictEqual(result.data[key], expected.data[key], uri + " " + key + " " + result.data[key] + " !== " + expected.data[key]);
-                                }
+                        if (expected.data) {
+                            for (var key in expected.data) {
+                                test.strictEqual(result.data[key], expected.data[key], uri + " " + key + " " + result.data[key] + " !== " + expected.data[key]);
                             }
-                            test.done();
-                        });
+                        }
+                        test.done();
                     });
-                });
             });
     };
 }

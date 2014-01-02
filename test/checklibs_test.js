@@ -14,7 +14,7 @@
  * See the Apache Version 2.0 License for specific language governing permissions
  * and limitations under the License.
  */
- 
+
 "use strict";
 
 var checklibs = require('../lib/checks/check-libs.js'),
@@ -45,9 +45,9 @@ function checkPage(page, test, expected) {
             $: cheerio.load(content)
         };
 
-        jsloader.loadjsFiles(website).then(function (js) {
-            website.js = js;
-            checklibs.check(website).then(function (result) {
+        jsloader.loadjsFiles(website)
+            .then(checklibs.check)
+            .then(function (result) {
                 test.equal(result.passed, expected.passed, uri + " " + result.data.join("\n"));
                 if (expected.data) {
                     for (var i = 0; i < expected.data.length; i++) {
@@ -59,7 +59,6 @@ function checkPage(page, test, expected) {
 
                 test.done();
             });
-        });
     });
 }
 
@@ -75,8 +74,8 @@ module.exports['JS Libraries'] = {
             passed: false,
             data: [
                 {
-					lineNumber: 7,
-					version: "1.4.2",
+                    lineNumber: 7,
+                    version: "1.4.2",
                     minVersion: "1.6.4"
                 }
             ]
@@ -96,8 +95,8 @@ module.exports['JS Libraries'] = {
             passed: false,
             data: [
                 {
-					lineNumber: 7,
-					version: "1.9.0",
+                    lineNumber: 7,
+                    version: "1.9.0",
                     minVersion: "1.9.2"
                 }
             ]
@@ -119,7 +118,7 @@ module.exports['JS Libraries'] = {
             data: [
                 {
                     lineNumber: 8,
-					version: "1.7.0",
+                    version: "1.7.0",
                     minVersion: "1.7.3"
                 }
             ]
@@ -131,12 +130,12 @@ module.exports['JS Libraries'] = {
             data: [
                 {
                     lineNumber: 7,
-					version: "1.4.2",
+                    version: "1.4.2",
                     minVersion: "1.6.4"
                 },
                 {
                     lineNumber: 8,
-					version: "1.7.0",
+                    version: "1.7.0",
                     minVersion: "1.7.3"
                 }
             ]
@@ -148,7 +147,7 @@ module.exports['JS Libraries'] = {
             data: [
                 {
                     lineNumber: 7,
-					version: "1.7",
+                    version: "1.7",
                     minVersion: "1.7.2"
                 }
             ]

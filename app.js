@@ -47,6 +47,24 @@ var url = require('url'),
             'Accept-Language': 'en-US,en;q=0.5',
             'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)'}});
 
+
+function launchParallelTests(promisesArray, website) {
+    var deferred = new Deferred();
+
+    process.nextTick(function () {
+
+        tests.forEach(function (test) {
+            if (!test.parallel) {
+                promisesArray.push(test.check(website));
+            }
+        });
+
+        deferred.resolve(promisesArray);
+    });
+
+    return deferred.promise;
+}
+
 /*
  * Since several tests need HTML/JS/CSS content, fetch it all at once
  * before calling any of the tests. Note that the tests still could
@@ -54,7 +72,8 @@ var url = require('url'),
  */
 function analyze(data, content, res) {
     var results = {},
-        start = Date.now();
+        start = Date.now(),
+        promisesTests = [];
 
     var website = {
         url: url.parse(data.uri),
@@ -64,44 +83,30 @@ function analyze(data, content, res) {
         $: cheerio.load(content.body, { lowerCaseTags: true, lowerCaseAttributeNames: true })
     };
 
-    var promisesTests = [];
-
     tests.forEach(function (test) {
         if (test.parallel) {
             promisesTests.push(test.check(website));
         }
     });
 
-    cssLoader.loadCssFiles(website).then(function (css) {
-        website.css = css;
-
-        jsLoader.loadjsFiles(website).then(function (js) {
-
-            website.js = js;
-
-            tests.forEach(function (test) {
-                if (!test.parallel) {
-                    promisesTests.push(test.check(website));
-                }
-            });
-
-            promises.all(promisesTests).then(function (array) {
-                // Generate final results and send back the response
-                for (var i = 0; i < array.length; i++) {
-                    results[array[i].testName] = array[i];
-                }
-                res.writeHeader(200, {"Content-Type": "application/json",
-                    "X-Content-Type-Options": "nosniff" });
-                res.write(JSON.stringify({url: data, processTime: (Date.now() - start) / 1000, results: results}));
-                res.end();
-            });
+    cssLoader.loadCssFiles(website)
+        .then(jsLoader.loadjsFiles)
+        .then(launchParallelTests.bind(null, promisesTests))
+        .then(promises.all)
+        .then(function (array) {
+            // Generate final results and send back the response
+            for (var i = 0; i < array.length; i++) {
+                results[array[i].testName] = array[i];
+            }
+            res.writeHeader(200, {"Content-Type": "application/json",
+                "X-Content-Type-Options": "nosniff" });
+            res.write(JSON.stringify({url: data, processTime: (Date.now() - start) / 1000, results: results}));
+            res.end();
+        }, function (error) {
+            res.writeHeader(500, {"Content-Type": "text/plain"});
+            res.write(JSON.stringify(error) + '\n');
+            res.end();
         });
-
-    }, function (error) {
-        res.writeHeader(500, {"Content-Type": "text/plain"});
-        res.write(JSON.stringify(error) + '\n');
-        res.end();
-    });
 }
 
 function remoteErrorResponse(response, statusCode, message) {

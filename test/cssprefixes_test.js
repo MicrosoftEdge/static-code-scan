@@ -14,7 +14,7 @@
  * See the Apache Version 2.0 License for specific language governing permissions
  * and limitations under the License.
  */
- 
+
 "use strict";
 
 var cssprefixes = require('../lib/checks/check-cssprefixes.js'),
@@ -38,28 +38,27 @@ function checkPage(page, expected) {
         test.expect(tests);
 
         request({uri: uri,
-            headers: {'user-agent': 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)'}},
-     function (error, response, content) {
-            var website = {
-                url: url.parse(uri),
-                content: content,
-                $: cheerio.load(content)
-            };
+                headers: {'user-agent': 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)'}},
+            function (error, response, content) {
+                var website = {
+                    url: url.parse(uri),
+                    content: content,
+                    $: cheerio.load(content)
+                };
 
-            cssloader.loadCssFiles(website).then(function (css) {
-                website.css = css;
-                cssprefixes.check(website).then(function (result) {
-                    test.equal(result.passed, expected.passed, uri + " passed: " + result.passed + " !== " + expected.passed);
+                cssloader.loadCssFiles(website)
+                    .then(cssprefixes.check)
+                    .then(function (result) {
+                        test.equal(result.passed, expected.passed, uri + " passed: " + result.passed + " !== " + expected.passed);
 
-                    if (expected.data) {
-                        for (var key in expected.data) {
-                            test.strictEqual(result.data[key], expected.data[key], uri + " " + key + " " + result.data[key] + " !== " + expected.data[key]);
+                        if (expected.data) {
+                            for (var key in expected.data) {
+                                test.strictEqual(result.data[key], expected.data[key], uri + " " + key + " " + result.data[key] + " !== " + expected.data[key]);
+                            }
                         }
-                    }
-                    test.done();
-                });
+                        test.done();
+                    });
             });
-        });
     };
 }
 
@@ -80,8 +79,8 @@ module.exports['CSS Prefixes'] = {
     'Gradients + Missing Transforms': checkPage("14.html", {passed: false}),
     'Embed Transform': checkPage("15.html", {passed: true}),
     'Embed Missing Transform': checkPage("16.html", {passed: false}),
-	'Imports using url(), inline': checkPage("17.html", {passed: false}),
-	'Imports using single, included': checkPage("18.html", {passed: false}),
-	'Imports using quoted url(), included': checkPage("19.html", {passed: false}),
+    'Imports using url(), inline': checkPage("17.html", {passed: false}),
+    'Imports using single, included': checkPage("18.html", {passed: false}),
+    'Imports using quoted url(), included': checkPage("19.html", {passed: false}),
     'Cycle import': checkPage("20.html", {passed: false})
 };
