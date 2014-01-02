@@ -48,23 +48,12 @@ var url = require('url'),
             'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)'}});
 
 
-function launchNonParallelTests(promisesArray, website) {
-    var deferred = new Deferred();
-
-    process.nextTick(function () {
-
-        tests.forEach(function (test) {
-            if (!test.parallel) {
-                promisesArray.push(test.check(website));
-            }
-        });
-
-        deferred.resolve(promisesArray);
-    });
-
-    return deferred.promise;
-}
-
+/**
+ * Serializes a test results array and sends it via the response
+ * @param {object} res The response to use to send the results
+ * @param {Timestamp} start The start timestamp
+ * @param {Array} resultsArray The results of all the tests
+ * */
 function sendResults(res, start, resultsArray) {
     var results = {};
 
@@ -77,64 +66,29 @@ function sendResults(res, start, resultsArray) {
     res.end();
 }
 
+
+/**
+ * Responds with an internal server error
+ * */
 function sendInternalServerError(error, res) {
     res.writeHeader(500, {"Content-Type": "text/plain"});
     res.write(JSON.stringify(error) + '\n');
     res.end();
 }
 
+/**
+ * Responds with the error and message passed as parameters
+ * */
 function remoteErrorResponse(response, statusCode, message) {
     response.writeHead(200, {"Content-Type": "application/json"});
     response.write(JSON.stringify({statusCode: statusCode, message: message}));
     response.end();
 }
 
-/*
- * Since several tests need HTML/JS/CSS content, fetch it all at once
- * before calling any of the tests. Note that the tests still could
- * retrieve additional content async, since they return a promise.
- */
-function analyze(data, content, res) {
-    var start = Date.now(),
-        promisesTests = [];
-
-    var website = {
-        url: url.parse(data.uri),
-        auth: data.auth,
-        content: content.body,
-        compression: content.compression,
-        $: cheerio.load(content.body, { lowerCaseTags: true, lowerCaseAttributeNames: true })
-    };
-
-    tests.forEach(function (test) {
-        if (test.parallel) {
-            promisesTests.push(test.check(website));
-        }
-    });
-
-    cssLoader.loadCssFiles(website)
-        .then(jsLoader.loadjsFiles)
-        .then(launchNonParallelTests.bind(null, promisesTests))
-        .then(promises.all)
-        .then(sendResults.bind(null, res, start), sendInternalServerError.bind(null, res));
-}
-
-function returnMainPage(req, response) {
-    fs.readFile(path.join(__dirname, "lib", "index.html"), function (err, data) {
-        if (!err) {
-            response.writeHeader(200, {"Content-Type": "text/html"});
-
-        } else {
-            response.writeHeader(500, {"Content-Type": "text/plain"});
-            data = "Server error: " + err + "\n";
-        }
-        response.write(data);
-        response.end();
-    });
-}
-
-
-
+/**
+ * Decompresses a byte array using the decompression method passed by type.
+ * It supports gunzip and deflate
+ * */
 function decompress(body, type) {
     var deferred = new Deferred();
 
@@ -169,7 +123,9 @@ function decompress(body, type) {
     return deferred.promise;
 }
 
-
+/**
+ * Gets the body of a pages and decompresses if needed
+ * */
 function getBody(res, body) {
     var deferred = new Deferred();
     if (res.headers['content-encoding']) {
@@ -188,6 +144,60 @@ function getBody(res, body) {
     return deferred.promise;
 }
 
+/**
+ * Launches and returns an array with the promises of all the non parallel tests
+ * (browser detection, css prefixes, etc.)
+ * */
+function launchNonParallelTests(promisesArray, website) {
+    var deferred = new Deferred();
+
+    process.nextTick(function () {
+
+        tests.forEach(function (test) {
+            if (!test.parallel) {
+                promisesArray.push(test.check(website));
+            }
+        });
+
+        deferred.resolve(promisesArray);
+    });
+
+    return deferred.promise;
+}
+
+/**
+ * Since several tests need HTML/JS/CSS content, fetch it all at once
+ * before calling any of the tests. Note that the tests still could
+ * retrieve additional content async, since they return a promise.
+ */
+function analyze(data, content, res) {
+    var start = Date.now(),
+        promisesTests = [];
+
+    var website = {
+        url: url.parse(data.uri),
+        auth: data.auth,
+        content: content.body,
+        compression: content.compression,
+        $: cheerio.load(content.body, { lowerCaseTags: true, lowerCaseAttributeNames: true })
+    };
+
+    tests.forEach(function (test) {
+        if (test.parallel) {
+            promisesTests.push(test.check(website));
+        }
+    });
+
+    cssLoader.loadCssFiles(website)
+        .then(jsLoader.loadjsFiles)
+        .then(launchNonParallelTests.bind(null, promisesTests))
+        .then(promises.all)
+        .then(sendResults.bind(null, res, start), sendInternalServerError.bind(null, res));
+}
+
+/**
+ * Handler for the request to get the body of a page and start all the process
+ * */
 function processResponse(response, auth) {
     return function (err, res, body) {
         if (!err && res.statusCode === 200) {
@@ -201,10 +211,30 @@ function processResponse(response, auth) {
     };
 }
 
+/**
+ * Returns the local scan page
+ * */
+function returnMainPage(response) {
+    fs.readFile(path.join(__dirname, "lib", "index.html"), function (err, data) {
+        if (!err) {
+            response.writeHeader(200, {"Content-Type": "text/html"});
+
+        } else {
+            response.writeHeader(500, {"Content-Type": "text/plain"});
+            data = "Server error: " + err + "\n";
+        }
+        response.write(data);
+        response.end();
+    });
+}
+
+/**
+ * Decides what action needs to be done: show the main page or analyze a website
+ * */
 function handleRequest(req, response) {
     if (req.url === '/') {
         // Return the "local scan" page
-        returnMainPage(req, response);
+        returnMainPage(response);
         return;
     }
 
@@ -230,6 +260,9 @@ function handleRequest(req, response) {
     }
 }
 
+/**
+ * Handles the content of a package sent via any of the plugins
+ * */
 function handlePackage(req, res) {
     if (!req.body.js || !req.body.css || !req.body.html || !req.body.url) {
         remoteErrorResponse(res, 400, "Missing information");
@@ -271,12 +304,9 @@ function handlePackage(req, res) {
 }
 
 app.use(express.bodyParser());
-
 app.get('/', handleRequest);
 app.post('/package', cors(), handlePackage);
-
 app.listen(port);
-//http.createServer(handleRequest).listen(port);
 
 console.log('Server started on port ' + port);
 console.log('To scan a private url go to http://localhost:' + port + '/ and follow the instructions');
