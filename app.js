@@ -66,6 +66,15 @@ function sendResults(res, start, resultsArray) {
     res.end();
 }
 
+/**
+ * Responds with a bad request error
+ * */
+function sendBadRequest(res){
+    res.writeHeader(400, {"Content-Type": "text/plain"});
+    res.write('Your package is malformed' + '\n');
+    res.end();
+}
+
 
 /**
  * Responds with an internal server error
@@ -103,7 +112,7 @@ function decompress(body, type) {
                 deferred.reject('Error found: can\'t gunzip content ' + err);
             }
         });
-    }else if(type === 'deflate'){
+    } else if (type === 'deflate') {
         zlib.inflateRaw(body, function (err, data) {
             if (!err) {
                 deferred.resolve({
@@ -114,8 +123,8 @@ function decompress(body, type) {
                 deferred.reject('Error found: can\'t deflate content' + err);
             }
         });
-    }else{
-        process.nextTick(function(){
+    } else {
+        process.nextTick(function () {
             deferred.reject("Unknown content encoding: " + type);
         });
     }
@@ -268,16 +277,23 @@ function handlePackage(req, res) {
         remoteErrorResponse(res, 400, "Missing information");
     }
     var start = Date.now(),
-        cssPromises = [];
+        cssPromises = [],
+        website;
 
-    var website = {
-        url: req.body.url ? url.parse(req.body.url.replace(/"/g, '')) : "http://privates.ite",
-        content: req.body.html,
-        css: null,
-        js: JSON.parse(req.body.js),
-        $: cheerio.load(req.body.html, { lowerCaseTags: true, lowerCaseAttributeNames: true })
-    };
-
+    //TODO: try/catch this
+    try {
+        website = {
+            url: req.body.url ? url.parse(req.body.url.replace(/"/g, '')) : "http://privates.ite",
+            content: req.body.html,
+            css: null,
+            js: JSON.parse(req.body.js),
+            $: cheerio.load(req.body.html, { lowerCaseTags: true, lowerCaseAttributeNames: true })
+        };
+    } catch (e) {
+        sendBadRequest(res);
+        return;
+    }
+    
     var remoteCSS = JSON.parse(req.body.css);
     remoteCSS.forEach(function (parsedCSS) {
         if (parsedCSS.content !== '') {
