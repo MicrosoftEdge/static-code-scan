@@ -32,7 +32,8 @@ module.exports = function (grunt) {
             input: ['test/**/input*.js'],
             browserdetection: ['test/**/browserdetection*.js'],
             preload: ['test/**/pre*.js'],
-            auth: ['test/**/auth*.js']
+            auth: ['test/**/auth*.js'],
+            altImg: ['test/**/alt*.js']
         },
         watch: {
             files: '<%= lint.files %>',
@@ -62,7 +63,7 @@ module.exports = function (grunt) {
                     setImmediate: true,
                     exports: true
                 }
-            },
+            }
         }
     });
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
