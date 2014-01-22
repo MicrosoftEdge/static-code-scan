@@ -33,7 +33,8 @@ module.exports = function (grunt) {
             browserdetection: ['test/**/browserdetection*.js'],
             preload: ['test/**/pre*.js'],
             auth: ['test/**/auth*.js'],
-            altImg: ['test/**/alt*.js']
+            altImg: ['test/**/alt*.js'],
+            aria: ['test/**/aria*.js']
         },
         watch: {
             files: '<%= lint.files %>',
