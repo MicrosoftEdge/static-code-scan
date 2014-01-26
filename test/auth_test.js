@@ -59,7 +59,7 @@ function checkPage(page, expected, auth) {
 
         test.expect(tests);
 
-        request(uri, function (error, response, content) {            
+        request(uri, function (error, response, content) {
 			var result = JSON.parse(content);
             checkObject(result, expected, test);
             test.done();

@@ -47,7 +47,6 @@ module.exports = function (grunt) {
                 'test/**/*.js'
             ],
             options: {
-                es5: true,
 				strict: false,
                 curly: true,
                 eqeqeq: true,
@@ -60,6 +59,10 @@ module.exports = function (grunt) {
                 boss: true,
                 eqnull: true,
                 node: true,
+				expr: true,
+				smarttabs: true,
+				trailing: true,
+				unused: "vars",
                 globals: {
                     setImmediate: true,
                     exports: true
