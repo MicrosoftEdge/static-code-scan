@@ -85,7 +85,16 @@ module.exports['JS Libraries'] = {
         checkPage('3.html', test, {passed: true});
     },
     'dojo - v1.8.0': function (test) {
-        checkPage('4.html', test, {passed: true});
+        checkPage('4.html', test, {
+			passed: false,
+            data: [
+                {
+                    lineNumber: 7,
+                    version: "1.8.0",
+                    minVersion: "1.8.5"
+                }
+            ]
+		});
     },
     'jQuery UI - latest version': function (test) {
         checkPage('5.html', test, {passed: true});
@@ -119,7 +128,7 @@ module.exports['JS Libraries'] = {
                 {
                     lineNumber: 8,
                     version: "1.7.0",
-                    minVersion: "1.7.3"
+                    minVersion: "1.7.5"
                 }
             ]
         });
@@ -136,7 +145,7 @@ module.exports['JS Libraries'] = {
                 {
                     lineNumber: 8,
                     version: "1.7.0",
-                    minVersion: "1.7.3"
+                    minVersion: "1.7.5"
                 }
             ]
         });
