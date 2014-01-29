@@ -22,7 +22,6 @@ var url = require('url'),
     port = process.env.PORT || 1337,
     request = require('request'),
     express = require('express'),
-    cors = require('cors'),
     app = express(),
     cheerio = require('cheerio'),
     promises = require('promised-io/promise'),
@@ -319,9 +318,27 @@ function handlePackage(req, res) {
         });
 }
 
+// ## CORS middleware
+//
+// see: http://stackoverflow.com/questions/7067966/how-to-allow-cors-in-express-nodejs
+var allowCrossDomain = function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'POST');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    // intercept OPTIONS method
+    if ('OPTIONS' == req.method) {
+        res.send(204);
+    }
+    else {
+        next();
+    }
+};
+app.use(allowCrossDomain);
+
 app.use(express.bodyParser());
 app.get('/', handleRequest);
-app.post('/package', cors(), handlePackage);
+app.post('/package', handlePackage);
 app.listen(port);
 
 console.log('Server started on port ' + port);
