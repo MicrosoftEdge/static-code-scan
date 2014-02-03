@@ -81,6 +81,7 @@ module.exports['DocType'] = {
         true),
     'Almost Standards mode: The public identifier "-//W3C//DTD HTML 4.01 Frameset//EN", with a system identifier': doctypeTestMaker('http://hixie.ch/tests/adhoc/compat/mozilla/001.cgi?DOCTYPE=%3C%21DOCTYPE+HTML+PUBLIC+%22-%2F%2FW3C%2F%2FDTD+HTML+4.01+Frameset%2F%2FEN%22+%22http%3A%2F%2Fwww.w3.org%2FTR%2Fhtml4%2Fframeset.dtd%22%3E&MODE=full&EXPECT=almost%20standards%20mode',
         true),
+	'Standards mode: A non-HTML SVG page': doctypeTestMaker('1.html', true),
     'Quirks mode: An XML declaration (pseudo-PI)': doctypeTestMaker('http://hixie.ch/tests/adhoc/compat/mozilla/001.cgi?DOCTYPE=%3C%3Fxml+version%3D%221.0%22%3F%3E&MODE=full&EXPECT=quirks%20mode',
         false),
     'Quirks mode: The absence of a DOCTYPE': doctypeTestMaker('http://hixie.ch/tests/adhoc/compat/mozilla/001.cgi?DOCTYPE=&MODE=full&EXPECT=quirks%20mode',
