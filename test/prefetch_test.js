@@ -99,5 +99,12 @@ module.exports['Preload'] = {
             prefetch: true,
             dnsprefetch: true,
             prerender: true
-        }})
+        }}),
+	'DNS + Single-page app': checkPage('7.html', {
+		passed: true,
+		data: {
+			prefetch: false,
+			dnsprefetch: true,
+			prerender: false
+		}})
 };
