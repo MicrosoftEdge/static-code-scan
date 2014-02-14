@@ -39,7 +39,7 @@ var url = require('url'),
     request = request.defaults({followAllRedirects: true,
         encoding: null,
         jar: false,
-        //proxy: 'http://localhost:8888',
+        proxy: process.env.HTTP_PROXY || process.env.http_proxy,
         headers: {
             'Accept': 'text/html, application/xhtml+xml, */*',
             'Accept-Encoding': 'gzip,deflate',
