@@ -56,7 +56,7 @@ var url = require('url'),
 function sendResults(res, start, resultsArray) {
     var results = {};
 
-    for (var i = 0; i < resultsArray.length; i++) {
+    for (var i = 0, len = resultsArray.length; i < len; i++) {
         results[resultsArray[i].testName] = resultsArray[i];
     }
     res.writeHeader(200, {"Content-Type": "application/json",
@@ -308,7 +308,7 @@ function handlePackage(req, res) {
             cssResults.concat.apply(cssResults, results);
             website.css = cssResults;
 
-            for (var i = 0; i < tests.length; i++) {
+            for (var i = 0, len = tests.length; i < len; i++) {
                 // Call each test and save its returned promise
                 promisesTests.push(tests[i].check(website));
             }
