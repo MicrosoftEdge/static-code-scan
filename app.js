@@ -61,7 +61,7 @@ function sendResults(res, start, resultsArray) {
     }
     res.writeHeader(200, {"Content-Type": "application/json",
         "X-Content-Type-Options": "nosniff" });
-    res.write(JSON.stringify({processTime: (Date.now() - start) / 1000, results: results}));
+    res.write(JSON.stringify({url: {uri: this.url.href}, processTime: (Date.now() - start)/1000, results: results}));
     res.end();
 }
 
@@ -200,7 +200,7 @@ function analyze(data, content, res) {
         .then(jsLoader.loadjsFiles)
         .then(launchNonParallelTests.bind(null, promisesTests))
         .then(promises.all)
-        .then(sendResults.bind(null, res, start), sendInternalServerError.bind(null, res));
+        .then(sendResults.bind(website, res, start), sendInternalServerError.bind(website, res));
 }
 
 /**
