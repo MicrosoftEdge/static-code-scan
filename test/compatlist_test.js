@@ -58,10 +58,10 @@ function checkPage(page, expected) {
 
 module.exports['Compatibility List'] = {
     'www.modern.ie - Not CV list': checkPage('http://www.modern.ie', {passed: true}),
-    'Present (www.crackle.com)': checkPage('http://www.crackle.com', {passed: false,
+    'Present (aladin.co.kr)': checkPage('http://aladin.co.kr', {passed: false,
         data: {
-            source: 'tag',
-            mode: 'ie=emulateie8'
+            source: 'cvlist',
+            mode: 'EmulateIE7'
         }
     }),
     'Website in cvlist but only for Flash (santandernet.com.br)': checkPage('http://santandernet.com.br', {passed: true}),
