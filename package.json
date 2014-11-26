@@ -19,7 +19,7 @@
       "url": "https://github.com/InternetExplorer/modern.IE-static-code-scan/blob/master/LICENSE"
     }
   ],
-  "main": "modernie",
+  "main": "app",
   "engines": {
     "node": "0.8.x",
     "npm": "1.2.x"
