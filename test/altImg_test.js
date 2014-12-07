@@ -61,7 +61,7 @@ module.exports['AltImg'] = {
         passed: true
     }),
     'Empty alt attribute': checkPage('2.html', {
-        passed: true
+        passed: false
     }),
     'No alt attribute, no src': checkPage('3.html', {
         passed: false,
