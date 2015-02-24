@@ -36,7 +36,8 @@ var url = require('url'),
     sanitize = require('validator').sanitize,
     charset = 'utf-8',
     querystring = require('querystring'),
-    request = request.defaults({followAllRedirects: true,
+    version = JSON.parse(fs.readFileSync('package.json')).version,
+	request = request.defaults({followAllRedirects: true,
         encoding: null,
         jar: false,
         proxy: process.env.HTTP_PROXY || process.env.http_proxy,
@@ -45,7 +46,6 @@ var url = require('url'),
             'Accept-Encoding': 'gzip,deflate',
             'Accept-Language': 'en-US,en;q=0.5',
             'User-Agent': 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)'}});
-
 
 /**
  * Serializes a test results array and sends it via the response
@@ -61,7 +61,7 @@ function sendResults(res, start, resultsArray) {
     }
     res.writeHeader(200, {"Content-Type": "application/json",
         "X-Content-Type-Options": "nosniff" });
-    res.write(JSON.stringify({url: {uri: (this && this.url && this.url.href) || 'http://private'}, processTime: (Date.now() - start)/1000, results: results}));
+    res.write(JSON.stringify({version: version, url: {uri: (this && this.url && this.url.href) || 'http://private'}, processTime: (Date.now() - start)/1000, results: results}));
     res.end();
 }
 
@@ -73,7 +73,6 @@ function sendBadRequest(res){
     res.write('Your package is malformed' + '\n');
     res.end();
 }
-
 
 /**
  * Responds with an internal server error

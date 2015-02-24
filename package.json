@@ -1,7 +1,7 @@
 {
-  "name": "Modern.ie",
-  "description": "Modern.ie will analyze a website and give hints on how to be more standards compliant",
-  "version": "0.5.0",
+  "name": "ModernIE static code scanner",
+  "description": "This scanner will check a website and give hints on how to be more standards compliant",
+  "version": "1.0.0",
   "homepage": "https://github.com/InternetExplorer/modern.IE-static-code-scan",
   "author": {
     "name": "Microsoft"
