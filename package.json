@@ -1,5 +1,5 @@
 {
-  "name": "ModernIE static code scanner",
+  "name": "ModernIE-static-code-scanner",
   "description": "This scanner will check a website and give hints on how to be more standards compliant",
   "version": "1.0.0",
   "homepage": "https://github.com/InternetExplorer/modern.IE-static-code-scan",
