@@ -23,6 +23,7 @@ var url = require('url'),
     request = require('request'),
     express = require('express'),
     app = express(),
+    bodyParser = require('body-parser'),
     cheerio = require('cheerio'),
     promises = require('promised-io/promise'),
     Deferred = require('promised-io').Deferred,
@@ -335,7 +336,7 @@ var allowCrossDomain = function (req, res, next) {
 };
 app.use(allowCrossDomain);
 
-app.use(express.bodyParser());
+app.use(bodyParser.json());
 app.get('/', handleRequest);
 app.post('/package', handlePackage);
 app.listen(port);
