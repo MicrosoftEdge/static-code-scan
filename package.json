@@ -2,16 +2,16 @@
   "name": "ModernIE-static-code-scanner",
   "description": "This scanner will check a website and give hints on how to be more standards compliant",
   "version": "1.0.1",
-  "homepage": "https://github.com/InternetExplorer/modern.IE-static-code-scan",
+  "homepage": "https://github.com/MicrosoftEdge/static-code-scan",
   "author": {
     "name": "Microsoft"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/InternetExplorer/modern.IE-static-code-scan.git"
+    "url": "https://github.com/MicrosoftEdge/static-code-scan.git"
   },
   "bugs": {
-    "url": "https://github.com/InternetExplorer/modern.IE-static-code-scan/issues"
+    "url": "https://github.com/MicrosoftEdge/static-code-scan/issues"
   },
   "license": "Apache-2.0",
   "main": "app",
