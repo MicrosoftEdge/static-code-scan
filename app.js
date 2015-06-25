@@ -179,8 +179,6 @@ var launchNonParallelTests = bluebird.method(function (promisesArray, website) {
  * Gets the body of a pages and decompresses if needed
  * */
 var getBody = function (request, website) {
-	//var deferred = new Deferred();
-	console.log(website.url);
 	return request.getAsync(website.url)
 		.then(function (result) {
 			var res = result[0];
@@ -197,7 +195,6 @@ var getBody = function (request, website) {
 
 			website.content = body.toString(charset);
 			website.$ = cheerio.load(website.content, {lowerCaseTags: true, lowerCaseAttributeNames: true});
-			console.log('body loaded');
 			return bluebird.resolve(website);
 		});
 };
@@ -283,19 +280,15 @@ var handleRequest = function (req, response) {
 
 	getBody(request, website)
 		.then(function (web) {
-			console.log('CSSLoader');
 			return cssLoader.loadCssFiles(web);
 		})
 		.then(function (web) {
-			console.log('JS loader');
 			return jsLoader.loadjsFiles(web);
 		})
 		.then(function (web) {
-			console.log('Non parallel tests');
 			return launchNonParallelTests(promisesTests, web);
 		})
 		.then(function (results) {
-			console.log('Finished');
 			sendResults(response, start, results);
 		})
 		.catch(function (error) {
