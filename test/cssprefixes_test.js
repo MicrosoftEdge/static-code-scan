@@ -19,7 +19,7 @@
 
 var cssprefixes = require('../lib/checks/check-cssprefixes.js'),
     url = require('url'),
-    cssloader = require('../lib/checks/loadcss.js'),
+    cssloader = require('../lib/loadcss.js'),
     request = require('request'),
     cheerio = require('cheerio'),
     testServer = require('../static/test-server.js'),

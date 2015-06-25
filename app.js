@@ -25,13 +25,13 @@ var url = require('url'),
 	app = express(),
 	bodyParser = require('body-parser'),
 	cheerio = require('cheerio'),
-	promises = require('promised-io/promise'),
-	Deferred = require('promised-io').Deferred,
-	promised = require('promised-io/promise'),
+//promises = require('promised-io/promise'),
+//Deferred = require('promised-io').Deferred,
+//promised = require('promised-io/promise'),
 	bluebird = require('bluebird'),
-	cssLoader = require('./lib/checks/loadcss.js'),
-	jsLoader = require('./lib/checks/loadjs.js'),
-	tests = require('./lib/checks/loadchecks.js').tests,
+	cssLoader = require('./lib/loadcss.js'),
+	jsLoader = require('./lib/loadjs.js'),
+	tests = require('./lib/loadchecks.js').tests,
 //http = require('http'),
 	path = require('path'),
 	zlib = require('zlib'),
@@ -96,61 +96,54 @@ var remoteErrorResponse = function (response, statusCode, message) {
  * Decompresses a byte array using the decompression method passed by type.
  * It supports gunzip and deflate
  * */
-var decompress = function (body, type) {
-	var deferred = new Deferred();
-
-	if (type === 'gzip') {
-		zlib.gunzip(body, function (err, data) {
-			if (!err) {
-				deferred.resolve({
-					body: data.toString(charset),
-					compression: 'gzip'
-				});
-			} else {
-				deferred.reject('Error found: can\'t gunzip content ' + err);
-			}
-		});
-	} else if (type === 'deflate') {
-		zlib.inflateRaw(body, function (err, data) {
-			if (!err) {
-				deferred.resolve({
-						body: data.toString(charset),
-						compression: 'deflate'
-					}
-				);
-			} else {
-				deferred.reject('Error found: can\'t deflate content' + err);
-			}
-		});
-	} else {
-		process.nextTick(function () {
-			deferred.reject('Unknown content encoding: ' + type);
-		});
-	}
-
-	return deferred.promise;
-};
+//var decompress = function (body, type) {
+//	var deferred = new Deferred();
+//
+//	if (type === 'gzip') {
+//		zlib.gunzip(body, function (err, data) {
+//			if (!err) {
+//				deferred.resolve({
+//					body: data.toString(charset),
+//					compression: 'gzip'
+//				});
+//			} else {
+//				deferred.reject('Error found: can\'t gunzip content ' + err);
+//			}
+//		});
+//	} else if (type === 'deflate') {
+//		zlib.inflateRaw(body, function (err, data) {
+//			if (!err) {
+//				deferred.resolve({
+//						body: data.toString(charset),
+//						compression: 'deflate'
+//					}
+//				);
+//			} else {
+//				deferred.reject('Error found: can\'t deflate content' + err);
+//			}
+//		});
+//	} else {
+//		process.nextTick(function () {
+//			deferred.reject('Unknown content encoding: ' + type);
+//		});
+//	}
+//
+//	return deferred.promise;
+//};
 
 /**
  * Launches and returns an array with the promises of all the non parallel tests
  * (browser detection, css prefixes, etc.)
  * */
-var launchNonParallelTests = function (promisesArray, website) {
-	var deferred = new Deferred();
-
-	process.nextTick(function () {
-
-		tests.forEach(function (test) {
-			if (!test.parallel) {
-				promisesArray.push(test.check(website));
-			}
-		});
-
-		deferred.resolve(promisesArray);
+var launchNonParallelTests = bluebird.method(function (promisesArray, website) {
+	tests.forEach(function (test) {
+		if (!test.parallel) {
+			promisesArray.push(test.check(website));
+		}
 	});
 
-	return deferred.promise;
-};
+	return bluebird.all(promisesArray);
+});
 
 /**
  * Since several tests need HTML/JS/CSS content, fetch it all at once
@@ -193,7 +186,7 @@ var getBody = function (request, website) {
 			var res = result[0];
 			var body = result[1];
 
-			if(!body){
+			if (!body) {
 				return bluebird.reject('Error found: Empty body');
 			}
 
@@ -208,22 +201,6 @@ var getBody = function (request, website) {
 			return bluebird.resolve(website);
 		});
 };
-
-/**
- * Handler for the request to get the body of a page and start all the process
- * */
-// function processResponse(response, auth) {
-//     return function (err, res, body) {
-//         if (!err && res.statusCode === 200) {
-//             getBody(res, body)
-//                 .then(function (result) {
-//                     analyze({uri: res.request.href, auth: auth}, result, response);
-//                 }, remoteErrorResponse.bind(null, response, res.statusCode));
-//         } else {
-//             remoteErrorResponse(response, res ? res.statusCode : 'No response', 'Error found: ' + err);
-//         }
-//     };
-// }
 
 /**
  * Returns the local scan page
@@ -313,23 +290,17 @@ var handleRequest = function (req, response) {
 			console.log('JS loader');
 			return jsLoader.loadjsFiles(web);
 		})
-		.then(launchNonParallelTests.bind(null, promisesTests))
-		.then(promises.all)
+		.then(function (web) {
+			console.log('Non parallel tests');
+			return launchNonParallelTests(promisesTests, web);
+		})
 		.then(function (results) {
+			console.log('Finished');
 			sendResults(response, start, results);
-		}, function (error) {
+		})
+		.catch(function (error) {
 			sendInternalServerError(error, response);
 		});
-	// request(urlToAnalyze, function(err, res, body){
-	//     if (!err && res.statusCode === 200) {
-	//         getBody(res, body)
-	//             .then(function (result) {
-	//                 analyze({uri: res.request.href}, result, response);
-	//             }, remoteErrorResponse.bind(null, response, res.statusCode));
-	//     } else {
-	//         remoteErrorResponse(response, res ? res.statusCode : 'No response', 'Error found: ' + err);
-	//     }
-	// });
 };
 
 /**
@@ -364,7 +335,7 @@ var handlePackage = function (req, res) {
 		}
 	});
 
-	promised.all(cssPromises)
+	bluebird.all(cssPromises)
 		.then(function (results) {
 			var cssResults = [],
 				promisesTests = [];
@@ -377,7 +348,7 @@ var handlePackage = function (req, res) {
 				promisesTests.push(tests[i].check(website));
 			}
 
-			promises.all(promisesTests)
+			bluebird.all(promisesTests)
 				.then(sendResults.bind(null, res, start));
 		});
 };
