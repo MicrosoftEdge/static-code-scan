@@ -18,7 +18,7 @@
 // Most of the test pages are from http://www.hixie.ch/tests/adhoc/compat/mozilla/001.cgi
 
 "use strict";
-var doctype = require('../lib/checks/check-doctype.js'),
+var doctype = require('../lib/checks/check-rendermode.js'),
     url = require('url'),
     request = require('request'),
     testServer = require('../static/test-server.js'),
