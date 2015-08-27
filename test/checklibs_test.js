@@ -163,5 +163,13 @@ module.exports['JS Libraries'] = {
                 }
             ]
         });
-    }
+    },
+    // Unit test for issue #97 (https://github.com/MicrosoftEdge/static-code-scan/issues/97)
+    // Tests both compiled & minified version of Bootstrap 3.3.5 which previously caused a
+    // false negative scan (detected as out dated jQuery)
+    'Boostrap 3.3.5': function (test) {
+        checkPage('12.html', test, {
+            passed: true
+        });
+    }    
 };
