@@ -24,6 +24,7 @@ var touchChecker = require('../lib/checks/check-touch.js'),
     request = require('request'),
     cheerio = require('cheerio'),
     testServer = require('../static/test-server.js'),
+    requester = require('../lib/requester.js'),
     testUrl = 'http://localhost:' + testServer.port + '/touch-';
 
 
@@ -44,6 +45,7 @@ function checkPage(page, expected) {
                 var website = {
                     url: url.parse(uri),
                     content: content,
+                    request: requester(),
                     $: cheerio.load(content)
                 };
 

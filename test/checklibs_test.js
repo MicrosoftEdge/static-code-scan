@@ -23,6 +23,7 @@ var checklibs = require('../lib/checks/check-libs.js'),
     cheerio = require('cheerio'),
     jsloader = require('../lib/loadjs.js'),
     testServer = require('../static/test-server.js'),
+    requester = require('../lib/requester.js'),
     testUrl = 'http://localhost:' + testServer.port + '/libs-';
 
 
@@ -42,6 +43,7 @@ function checkPage(page, test, expected) {
         var website = {
             url: url.parse(uri),
             content: content,
+            request: requester(),
             $: cheerio.load(content)
         };
 
