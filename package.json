@@ -1,7 +1,7 @@
 {
   "name": "ModernIE-static-code-scanner",
   "description": "This scanner will check a website and give hints on how to be more standards compliant",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "homepage": "https://github.com/MicrosoftEdge/static-code-scan",
   "author": {
     "name": "Microsoft"
