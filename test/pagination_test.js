@@ -69,5 +69,8 @@ module.exports['Pagination'] = {
     }),
     'Pagination - Prev/Next': checkPage('4.html', {
         passed: true
+    }),
+    'Pagination - Next with prefetch': checkPage('5.html', {
+        passed: true
     })
 };

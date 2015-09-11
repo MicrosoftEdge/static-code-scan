@@ -19,10 +19,11 @@
 
 var responsive = require('../lib/checks/check-responsive.js'),
     url = require('url'),
-    cssloader = require('../lib/checks/loadcss.js'),
+    cssloader = require('../lib/loadcss.js'),
     request = require('request'),
     cheerio = require('cheerio'),
     testServer = require('../static/test-server.js'),
+    requester = require('../lib/requester.js'),
     testUrl = 'http://localhost:' + testServer.port + '/rwd-';
 
 
@@ -43,6 +44,7 @@ function checkPage(page, expected) {
                 var website = {
                     url: url.parse(uri),
                     content: content,
+                    request: requester(),
                     $: cheerio.load(content)
                 };
 
@@ -56,7 +58,7 @@ function checkPage(page, expected) {
                                 test.deepEqual(result.data[key], expected.data[key], uri + " " + key + " " + result.data[key] + " !== " + expected.data[key]);
                             }
                         }
-                        
+
                         test.done();
                     });
             });

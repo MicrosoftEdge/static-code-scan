@@ -19,11 +19,8 @@ module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         nodeunit: {
-            all: ['test/**/*.js'],
             libs: ['test/**/checklibs*.js'],
-            compat: ['test/**/compatlist*.js'],
             cssprefixes: ['test/**/cssprefixes*.js'],
-            doctype: ['test/**/doctype*.js'],
             ie11tiles: ['test/**/ie11*.js'],
             pluginfree: ['test/**/pluginfree*.js'],
             rwd: ['test/**/responsive*.js'],
@@ -32,14 +29,9 @@ module.exports = function (grunt) {
             input: ['test/**/input*.js'],
             browserdetection: ['test/**/browserdetection*.js'],
             preload: ['test/**/pre*.js'],
-            auth: ['test/**/auth*.js'],
             altImg: ['test/**/alt*.js'],
             aria: ['test/**/aria*.js']
-        },
-        watch: {
-            files: '<%= lint.files %>',
-            tasks: 'jshint'
-        },
+        },       
         jshint: {
             files: [
                 'grunt.js',
@@ -71,7 +63,6 @@ module.exports = function (grunt) {
         }
     });
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
-    grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks("grunt-contrib-jshint");
     // Default task.
     grunt.registerTask('default', ['jshint', 'nodeunit']);

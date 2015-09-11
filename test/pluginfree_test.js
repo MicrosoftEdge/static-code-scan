@@ -22,6 +22,7 @@ var pluginChecker = require('../lib/checks/check-pluginfree.js'),
     cheerio = require('cheerio'),
     url = require('url'),
     testServer = require('../static/test-server.js'),
+    requester = require('../lib/requester.js'),
     testUrl = 'http://localhost:' + testServer.port + '/plugin-';
 
 
@@ -40,6 +41,7 @@ function checkPage(page, expected) {
             var website = {
                 url: url.parse(uri),
                 content: content,
+                request: requester(),
                 $: cheerio.load(content, { lowerCaseTags: true, lowerCaseAttributeNames: true })
             };
 
@@ -85,10 +87,15 @@ module.exports['Plugin Free'] = {
             lineNumber: 11
         }
     }),
+    /*
+     * REMOVED BY M-GAGNE
+     * aardman.com no longer in CV List
+     * this test is fragile as the CV List changes     
     'Blocked website in CV List': checkPage('http://aardman.com',{passed:false,
     data:{
         activex: false,
         cvlist: true
     }}),
+    */
     'Embed tag with SVG instead flash ( http://doulosdiscovery.org)': checkPage('http://doulosdiscovery.org', {passed: true})
 };

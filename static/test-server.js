@@ -20,7 +20,7 @@ http.createServer(function(req, res) {
     var filename = path.join(process.cwd(),'static', uri);
     fs.exists(filename, function(exists) {
         if(!exists) {
-            console.log("not exists: " + filename);
+            console.error("not exists: " + filename);
             res.writeHead(404, {'Content-Type': 'text/plain'});
             res.write('404 Not Found\n');
             res.end();
