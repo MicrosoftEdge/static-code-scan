@@ -30,6 +30,18 @@ Once all the checks have completed, it responds with a JSON object representing 
 * If you want to modify the code and submit revisions, [Install git](http://git-scm.com/downloads). You can choose [GitHub for Windows](http://windows.github.com/) instead if you prefer. Then clone this repository. If you just want to run locally then downloading then you just need to download the latest version from [here](https://github.com/InternetExplorer/modern.IE-static-code-scan/archive/master.zip) and unzip it
 * Install dependencies. From the Modern.ie subdirectory, type: `npm install`
 * If desired, set an environment variable `PORT` to define the port the service will listen on. By default the port number is 1337. The Windows command to set the port to 8181 would be: `set PORT=8181`
+ 
+### CLI
+The scanner has a CLI interface that prints directly the results for a website. You just have to run the following command to use it:
+
+```
+static-code-scan
+```
+
+![demo](https://cloud.githubusercontent.com/assets/4303/10773742/6a4f47d6-7cba-11e5-9d25-7da62fb66edd.gif)
+
+### Via browser
+
 * Start the scan service: From the Modern.ie subdirectory, type: `node app.js` and the service should respond with a status message containing the port number it is using.
 * Run a browser and go to the service's URL; assuming you are using the default port and are on the same computer, the URL would be: `http://localhost:1337/`
 * Follow the instructions on the page.
