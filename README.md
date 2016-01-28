@@ -4,7 +4,7 @@ This tool analyzes the HTML, CSS, and JavaScript of a site or application for co
 It warns about practices such as incomplete specification of CSS properties, invalid or incorrect
 doctypes, and obsolete versions of popular JavaScript libraries.
 
-It's easiest to use modern.IE by going to the [modern.IE site](http://modern.ie) 
+It's easiest to use modern.IE by going to the [modern.IE site](https://dev.windows.com/en-us/microsoft-edge/tools/staticscan/) 
 and entering the URL to scan there. To customize the scan, or to use the scan
 to process files behind a firewall, you can clone and build the files from this repo
 and run the scan locally.
