@@ -164,6 +164,11 @@ module.exports['JS Libraries'] = {
             ]
         });
     },
+    'jQuery up to date 1.12': function (test) {
+        checkPage('13.html', test, {
+            passed: true
+        });
+    },
     // Unit test for issue #97 (https://github.com/MicrosoftEdge/static-code-scan/issues/97)
     // Tests both compiled & minified version of Bootstrap 3.3.5 which previously caused a
     // false negative scan (detected as out dated jQuery)
