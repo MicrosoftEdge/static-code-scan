@@ -171,5 +171,5 @@ module.exports['JS Libraries'] = {
         checkPage('12.html', test, {
             passed: true
         });
-    }    
+    }
 };
