@@ -35,11 +35,7 @@ module.exports = function (grunt) {
             auth: ['test/**/auth*.js'],
             altImg: ['test/**/alt*.js'],
             aria: ['test/**/aria*.js']
-        },
-        watch: {
-            files: '<%= lint.files %>',
-            tasks: 'jshint'
-        },
+        },       
         jshint: {
             files: [
                 'grunt.js',

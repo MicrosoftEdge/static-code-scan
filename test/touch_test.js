@@ -19,8 +19,8 @@
 
 var touchChecker = require('../lib/checks/check-touch.js'),
     url = require('url'),
-    cssloader = require('../lib/checks/loadcss.js'),
-    jsLoader = require('../lib/checks/loadjs.js'),
+    cssloader = require('../lib/loadcss.js'),
+    jsLoader = require('../lib/loadjs.js'),
     request = require('request'),
     cheerio = require('cheerio'),
     testServer = require('../static/test-server.js'),

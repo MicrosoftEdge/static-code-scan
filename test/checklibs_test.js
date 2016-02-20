@@ -21,7 +21,7 @@ var checklibs = require('../lib/checks/check-libs.js'),
     url = require('url'),
     request = require('request'),
     cheerio = require('cheerio'),
-    jsloader = require('../lib/checks/loadjs.js'),
+    jsloader = require('../lib/loadjs.js'),
     testServer = require('../static/test-server.js'),
     testUrl = 'http://localhost:' + testServer.port + '/libs-';
 

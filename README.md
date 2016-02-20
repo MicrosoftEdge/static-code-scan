@@ -1,6 +1,6 @@
-# modern.IE
+# Static Scan
 
-The modern.IE scan analyzes the HTML, CSS, and JavaScript of a site or application for common coding issues.
+This tool analyzes the HTML, CSS, and JavaScript of a site or application for common coding issues.
 It warns about practices such as incomplete specification of CSS properties, invalid or incorrect
 doctypes, and obsolete versions of popular JavaScript libraries.
 
