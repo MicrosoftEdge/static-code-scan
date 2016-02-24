@@ -44,7 +44,7 @@ function checkPage(page, expected) {
                 var website = {
                     url: url.parse(uri),
                     content: content,
-                    request: requester(),                    
+                    request: requester(),
                     $: cheerio.load(content)
                 };
 

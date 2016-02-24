@@ -24,7 +24,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "grunt test"
+    "test": "grunt nodeunit"
   },
   "dependencies": {
     "bluebird": "^2.9.30",
@@ -45,8 +45,8 @@
   },
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "0.7.2",
-    "grunt-contrib-nodeunit": "^0.4.1"
+    "grunt-contrib-jshint": "0.12.0",
+    "grunt-contrib-nodeunit": "0.4.1"
   },
   "keywords": [
     "scan",
