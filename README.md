@@ -40,6 +40,8 @@ static-code-scan
 
 ![demo](https://cloud.githubusercontent.com/assets/4303/10773742/6a4f47d6-7cba-11e5-9d25-7da62fb66edd.gif)
 
+Note: Windows users may need to navigate to the Modern.ie subdirectory and type `npm link` to get the `static-code-scan` command to work.
+
 ### Via browser
 
 * Start the scan service: From the Modern.ie subdirectory, type: `node app.js` and the service should respond with a status message containing the port number it is using.
