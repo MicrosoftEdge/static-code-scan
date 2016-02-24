@@ -171,18 +171,27 @@
 <div id="step2">
 	<h2>Generate report</h2>
 
-	<p>
+	<div style="color: red;">
 		<b>Report generation is not currently working. Please use the <a href="https://github.com/MicrosoftEdge/static-code-scan/#cli">CLI</a></b>
-		The scan is complete and the report is ready to be generated.
+    </div>
+    <div>
+		The scan is complete. 
+    </div>
+    
+    <!--TODO: Un-comment when report generation is fixed-->
+    <!--<div>
+        The report is ready to be generated.
+    </div>
+    <div>
 		Press the button below to submit the scan data to the Modern.ie site and create the report.
-	</p>
+	</div>
 
 	<form id="reportform" action="https://dev.windows.com/en-us/microsoft-edge/tools/staticscan/local/" method="post">
 		<input type="submit" id="report" value="Create Report">
 		<input type="hidden" name="local_test_results" id="json" value="">
-	</form>
+	</form>-->
 
-	<p><a href="" id="viewresults">See what will be submitted</a></p>
+	<p><a href="" id="viewresults">See results in JSON format</a></p>
 	<pre id="scanresults"></pre>
 
 	<div>
