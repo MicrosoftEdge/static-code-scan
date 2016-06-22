@@ -66,3 +66,6 @@ Once the scan completes, it produces a set of scan results in JSON format:
 ```
 
 The `data` property will vary depending on the test, but will generally provide further detail about any issues found.
+
+## Code of Conduct
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
